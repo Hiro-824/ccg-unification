@@ -1,4 +1,4 @@
-import { FeatureStructure } from "./fs";
+import { FeatureStructure } from "./fs/types";
 
 export type AtomicCategory = {
     kind: "Atomic";
