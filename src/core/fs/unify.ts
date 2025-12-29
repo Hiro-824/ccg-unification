@@ -1,13 +1,5 @@
 import { UnificationEnvironment } from "./env";
-import { FeatureStructure, FeatureValue, Var } from "./types";
-
-function isVar(value: FeatureValue): value is Var {
-    return (typeof value === 'object' && value !== null && 'kind' in value && value.kind === 'Var');
-}
-
-function isFeatureStructure(value: FeatureValue): value is FeatureStructure {
-    return (typeof value === 'object' && value !== null && 'kind' in value && value.kind === 'FeatureStructure');
-}
+import { FeatureValue, isFeatureStructure, isVar, } from "./types";
 
 export function deref(
     value: FeatureValue,
@@ -73,10 +65,10 @@ export function unify(
     const a1 = deref(a, env);
     const b1 = deref(b, env);
 
-    // Same object or same unbound Var
+    // Identity check
     if (a1 === b1) return true;
 
-    // Var cases
+    // 1. Variable Binding
     if (isVar(a1)) {
         if (occursCheck(a1.id, b1, env)) return false;
         env.bindings.set(a1.id, b1);
@@ -89,31 +81,41 @@ export function unify(
         return true;
     }
 
-    // Atomic values
-    if (
-        typeof a1 !== "object" &&
-        typeof b1 !== "object"
-    ) {
-        return a1 === b1;
-    }
-
-    // Feature structures
+    // 2. Feature Structures
     if (isFeatureStructure(a1) && isFeatureStructure(b1)) {
-        const keys = new Set([
+        const allKeys = new Set([
             ...Object.keys(a1.features),
             ...Object.keys(b1.features),
         ]);
 
-        for (const k of keys) {
+        for (const k of allKeys) {
             const v1 = a1.features[k];
             const v2 = b1.features[k];
-            if (v1 === undefined || v2 === undefined) continue;
-            if (!unify(v1, v2, env)) return false;
+
+            if (v1 !== undefined && v2 !== undefined) {
+                if (!unify(v1, v2, env)) return false;
+            } else if (v1 === undefined && v2 !== undefined) {
+                a1.features[k] = v2;
+            }
         }
+
+        // OPTIONAL BUT RECOMMENDED: 
+        // Technically, a1 and b1 are now "unified". In a graph system, they should point to the same node.
+        // Since we can't easily change pointers of objects in JS without a wrapper,
+        // we often assume that because we merged b1 into a1, a1 is the "result".
+        // But if b1 is referenced elsewhere, it won't see a1's new features.
+        // A strict "Union-Find" for objects is complex. 
+        // A simple trick: Bind b1 to a1 in the environment ONLY IF b1 was a root object in this scope.
+        // But since b1 is not a Var, we can't bind it in 'bindings' (which maps string IDs).
+
+        // PRACTICAL SOLUTION FOR TYPESCRIPT PARSERS:
+        // Ensure that 'renameApart' creates a fresh deep copy. 
+        // Then, mutation of 'a1' is acceptable because 'a1' is unique to this parse branch.
+
         return true;
     }
 
-    // Arrays
+    // 3. Arrays
     if (Array.isArray(a1) && Array.isArray(b1)) {
         if (a1.length !== b1.length) return false;
         for (let i = 0; i < a1.length; i++) {
@@ -122,6 +124,10 @@ export function unify(
         return true;
     }
 
-    // Mismatched types
+    // 4. Atomics
+    if (typeof a1 !== "object" && typeof b1 !== "object") {
+        return a1 === b1;
+    }
+
     return false;
 }

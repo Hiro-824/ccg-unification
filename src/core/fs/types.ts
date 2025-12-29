@@ -17,3 +17,11 @@ export type FeatureValue =
     | AtomicValue
     | Var
     | FeatureValue[];
+
+export function isVar(value: FeatureValue): value is Var {
+    return (typeof value === 'object' && value !== null && 'kind' in value && value.kind === 'Var');
+}
+
+export function isFeatureStructure(value: FeatureValue): value is FeatureStructure {
+    return (typeof value === 'object' && value !== null && 'kind' in value && value.kind === 'FeatureStructure');
+}
