@@ -1,20 +1,38 @@
 "use client";
 
-import { contextFreeGrammar } from "@/src/grammars/cfg";
+import { categorialGrammar } from "@/src/grammars/ccg";
 import { parse } from "@/src/parser/parser";
 import { FormEvent, useMemo, useState } from "react";
+
+type Category = string | ComplexCategory;
+type ComplexCategory = {
+  direction: "/" | "\\";
+  argument: Category;
+  result: Category;
+};
+
+const formatCategory = (category: Category): string => {
+  if (typeof category === "string") return category;
+  const result = formatCategory(category.result);
+  const argument = formatCategory(category.argument);
+  const formattedResult =
+    typeof category.result === "string" ? result : `(${result})`;
+  const formattedArgument =
+    typeof category.argument === "string" ? argument : `(${argument})`;
+  return `${formattedResult}${category.direction}${formattedArgument}`;
+};
 
 type ParseOutcome = {
   tokens: string[];
   categories: string[];
 };
 
-export default function CFGPage() {
+export default function CCGPage() {
   const vocabulary = useMemo(
     () =>
-      Object.entries(contextFreeGrammar.words).map(([word, categories]) => ({
+      Object.entries(categorialGrammar.words).map(([word, categories]) => ({
         word,
-        categories,
+        categories: categories.map(formatCategory),
       })),
     []
   );
@@ -32,7 +50,7 @@ export default function CFGPage() {
       return;
     }
     const categories = Array.from(
-      new Set(parse(tokens, contextFreeGrammar))
+      new Set(parse(tokens, categorialGrammar).map((c) => formatCategory(c as Category)))
     );
     setResult({ tokens, categories });
   };
@@ -42,9 +60,9 @@ export default function CFGPage() {
       <div className="mx-auto flex max-w-4xl flex-col gap-8 px-6 py-12">
         <header className="space-y-2">
           <p className="text-sm uppercase tracking-[0.2em] text-slate-500">
-            CFG Parser
+            CCG Parser
           </p>
-          <h1 className="text-3xl font-semibold">Context-Free Grammar</h1>
+          <h1 className="text-3xl font-semibold">Combinatory Categorial Grammar</h1>
           <p className="max-w-2xl text-base text-slate-600">
             Type a sentence using the vocabulary below and parse it.
           </p>
@@ -75,7 +93,7 @@ export default function CFGPage() {
               </label>
               <input
                 className="w-full rounded-lg border border-slate-200 bg-white px-4 py-3 text-base shadow-sm outline-none ring-0 transition focus:border-slate-400 focus:ring-2 focus:ring-slate-200"
-                placeholder="e.g. John sees a dog"
+                placeholder="e.g. John sees Mary"
                 value={sentence}
                 onChange={(event) => setSentence(event.target.value)}
               />
