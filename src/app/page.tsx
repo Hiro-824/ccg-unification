@@ -1,25 +1,89 @@
 "use client";
 
 import { FormEvent, useMemo, useState } from "react";
-import { parse } from "../parser/parser";
+import { categorialGrammar } from "../grammars/ccg";
 import { contextFreeGrammar } from "../grammars/cfg";
+import { Grammar, parse } from "../parser/parser";
+
 type ParseOutcome = {
   tokens: string[];
   categories: string[];
 };
 
+type GrammarOption = {
+  id: string;
+  label: string;
+  description: string;
+  grammar: Grammar<unknown> & { words: Record<string, unknown[]> };
+};
+
+type ComplexCategory = {
+  direction: "/" | "\\";
+  argument: unknown;
+  result: unknown;
+};
+
+const formatCategory = (category: unknown): string => {
+  if (typeof category === "string") return category;
+  if (
+    category &&
+    typeof category === "object" &&
+    "direction" in category &&
+    "argument" in category &&
+    "result" in category &&
+    (category as ComplexCategory).direction &&
+    ((category as ComplexCategory).direction === "/" ||
+      (category as ComplexCategory).direction === "\\")
+  ) {
+    const typed = category as ComplexCategory;
+    const result = formatCategory(typed.result);
+    const argument = formatCategory(typed.argument);
+    const formattedResult =
+      typeof typed.result === "string" ? result : `(${result})`;
+    const formattedArgument =
+      typeof typed.argument === "string" ? argument : `(${argument})`;
+    return `${formattedResult}${typed.direction}${formattedArgument}`;
+  }
+  return String(category);
+};
+
 export default function Home() {
-  const vocabulary = useMemo(
-    () =>
-      Object.entries(contextFreeGrammar.words).map(([word, categories]) => ({
-        word,
-        categories,
-      })),
+  const grammarOptions = useMemo<GrammarOption[]>(
+    () => [
+      {
+        id: "cfg",
+        label: "CFG",
+        description: "Context-Free Grammar",
+        grammar: contextFreeGrammar,
+      },
+      {
+        id: "ccg",
+        label: "CCG",
+        description: "Combinatory Categorial Grammar",
+        grammar: categorialGrammar,
+      },
+    ],
     []
+  );
+  const [selectedGrammarId, setSelectedGrammarId] = useState(
+    () => grammarOptions[0].id
   );
   const [sentence, setSentence] = useState("");
   const [result, setResult] = useState<ParseOutcome | null>(null);
   const [error, setError] = useState<string | null>(null);
+
+  const selectedGrammar =
+    grammarOptions.find((option) => option.id === selectedGrammarId) ||
+    grammarOptions[0];
+
+  const vocabulary = useMemo(
+    () =>
+      Object.entries(selectedGrammar.grammar.words).map(([word, categories]) => ({
+        word,
+        categories: categories.map(formatCategory),
+      })),
+    [selectedGrammar]
+  );
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -34,17 +98,9 @@ export default function Home() {
       return;
     }
 
-    const unknown = tokens.filter(
-      (token) => !contextFreeGrammar.words[token]
-    );
-    if (unknown.length > 0) {
-      setError(`Unknown word${unknown.length > 1 ? "s" : ""}: ${unknown.join(", ")}`);
-      setResult(null);
-      return;
-    }
-
+    const parsedCategories = parse(tokens, selectedGrammar.grammar);
     const categories = Array.from(
-      new Set(parse(tokens, contextFreeGrammar))
+      new Set(parsedCategories.map((category) => formatCategory(category)))
     );
     setResult({ tokens, categories });
     setError(null);
@@ -52,46 +108,75 @@ export default function Home() {
 
   return (
     <main className="min-h-screen bg-gradient-to-b from-slate-50 to-slate-100 text-slate-900">
-      <div className="mx-auto flex max-w-4xl flex-col gap-8 px-6 py-12">
+      <div className="mx-auto flex max-w-5xl flex-col gap-8 px-6 py-12">
         <header className="space-y-2">
           <p className="text-sm uppercase tracking-[0.2em] text-slate-500">
             Grammar Playground
           </p>
           <h1 className="text-3xl font-semibold">Sentence Builder</h1>
           <p className="max-w-2xl text-base text-slate-600">
-            Choose from the available vocabulary, type a sentence, and see how
-            the grammar parses it. Use only the words listed below.
+            Pick a grammar, type a sentence using its vocabulary, and see how it
+            parses. If a word is unavailable, the parse will simply fail.
           </p>
         </header>
 
         <section className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+          <div className="flex flex-wrap items-center gap-3">
+            {grammarOptions.map((option) => {
+              const isActive = option.id === selectedGrammar.id;
+              return (
+                <button
+                  key={option.id}
+                  type="button"
+                  onClick={() => {
+                    setSelectedGrammarId(option.id);
+                    setResult(null);
+                    setError(null);
+                  }}
+                  className={`rounded-xl border px-4 py-3 text-left transition ${
+                    isActive
+                      ? "border-slate-900 bg-slate-900 text-white shadow-sm"
+                      : "border-slate-200 bg-slate-50 text-slate-800 hover:border-slate-300 hover:bg-white"
+                  }`}
+                >
+                  <div className="text-sm font-semibold uppercase tracking-wide">
+                    {option.label}
+                  </div>
+                  <div
+                    className={`text-xs ${
+                      isActive ? "text-slate-100" : "text-slate-600"
+                    }`}
+                  >
+                    {option.description}
+                  </div>
+                </button>
+              );
+            })}
+          </div>
+        </section>
+
+        <section className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
           <div className="mb-4 flex items-center justify-between gap-2">
             <div>
-              <h2 className="text-lg font-semibold">Available words</h2>
+              <h2 className="text-lg font-semibold">
+                Available words for {selectedGrammar.description}
+              </h2>
               <p className="text-sm text-slate-600">
-                Tap a word to copy it into your sentence.
+                Reference only&mdash;type words manually when building your sentence.
               </p>
             </div>
           </div>
           <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4">
             {vocabulary.map(({ word, categories }) => (
-              <button
+              <div
                 key={word}
-                type="button"
-                onClick={() =>
-                  setSentence((current) =>
-                    current ? `${current.trim()} ${word}` : word
-                  )
-                }
-                className="group rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-left transition hover:-translate-y-0.5 hover:border-slate-300 hover:bg-white"
+                className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 shadow-sm"
               >
-                <div className="font-semibold group-hover:text-slate-900">
-                  {word}
-                </div>
+                <div className="font-semibold text-slate-900">{word}</div>
                 <div className="text-xs uppercase tracking-wide text-slate-500">
                   {categories.join(", ")}
                 </div>
-              </button>
+              </div>
             ))}
           </div>
         </section>
@@ -104,7 +189,10 @@ export default function Home() {
               </label>
               <input
                 className="w-full rounded-lg border border-slate-200 bg-white px-4 py-3 text-base shadow-sm outline-none ring-0 transition focus:border-slate-400 focus:ring-2 focus:ring-slate-200"
-                placeholder="e.g. John sees a dog"
+                placeholder={`e.g. ${vocabulary
+                  .slice(0, 3)
+                  .map((entry) => entry.word)
+                  .join(" ")}`}
                 value={sentence}
                 onChange={(event) => setSentence(event.target.value)}
               />
@@ -135,8 +223,9 @@ export default function Home() {
 
           {result && (
             <div className="mt-6 space-y-3 rounded-xl border border-slate-200 bg-slate-50 p-4">
-              <div className="text-xs uppercase tracking-[0.2em] text-slate-500">
-                Parse result
+              <div className="flex items-center justify-between text-xs uppercase tracking-[0.2em] text-slate-500">
+                <span>Parse result</span>
+                <span>{selectedGrammar.label}</span>
               </div>
               <div className="flex flex-wrap gap-2 text-sm text-slate-800">
                 {result.tokens.map((token, index) => (
