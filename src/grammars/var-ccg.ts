@@ -33,43 +33,163 @@ const complex = (result: Category, dir: "/" | "\\", arg: Category): ComplexCateg
     result: result
 });
 
+const v = (id: string): Variable => ({ kind: "Variable", id });
+
 class CategorialGrammar implements Grammar<Category> {
     words: Record<string, Category[]> = {
-        "John": [atom("NP", { number: "singular", person: 3 })],
-        "sees": [complex(complex(atom("S"), "\\", atom("NP", { number: "singular", person: 3 })), "/", atom("NP"))],
-        "see": [
-            complex(complex(atom("S"), "\\", atom("NP", { number: "plural" })), "/", atom("NP")),
-            complex(complex(atom("S"), "\\", atom("NP", { number: "singular", person: 1 })), "/", atom("NP")),
-            complex(complex(atom("S"), "\\", atom("NP", { number: "singular", person: 2 })), "/", atom("NP")),
+        "John": [atom("NP", { num: "sg", pers: 3, gender: "m" })],
+        "Mary": [atom("NP", { num: "sg", pers: 3, gender: "f" })],
+        "sees": [
+            complex(
+                complex(atom("S"), "\\", atom("NP", { num: "sg", pers: 3, index: v("s") })),
+                "/", 
+                atom("NP", { index: v("o") })
+            )
         ],
-        "Mary": [atom("NP", { number: "singular", person: 3 })],
-        "People": [atom("NP", { number: "plural", person: 3 })]
+        "himself": [
+            complex(
+                complex(atom("S"), "\\", atom("NP", { index: v("x"), gender: "m" })), 
+                "\\", 
+                complex(
+                    complex(atom("S"), "\\", atom("NP", { index: v("x") })), 
+                    "/", 
+                    atom("NP", { index: v("x") })
+                )
+            )
+        ],
+        "dogs": [atom("NP", { num: "pl" })],
+        "dog":  [atom("NP", { num: "sg" })],
+        "run":  [complex(atom("S"), "\\", atom("NP", { num: "pl" }))],
+        "runs": [complex(atom("S"), "\\", atom("NP", { num: "sg" }))],
+        "that": [
+            complex(
+                // Result: NP[?x] \ NP[?x]  (名詞修飾語)
+                complex(
+                    atom("NP", { num: v("x") }), 
+                    "\\", 
+                    atom("NP", { num: v("x") })
+                ),
+                "/",
+                // Argument: S \ NP[?x] (主語が欠けた動詞句)
+                complex(
+                    atom("S"), 
+                    "\\", 
+                    atom("NP", { num: v("x") })
+                )
+            )
+        ],
     };
 
     getTerminalCategories(word: string): Category[] {
-        return this.words[word] || [];
+        const categories = this.words[word] || [];
+        return categories.map(cat => this.renameVariables(cat));
     }
 
     combine(left: Category, right: Category): Category[] {
         const categories: Category[] = [];
+
         const forwardApplicationResult = this.applyForward(left, right);
+        if (forwardApplicationResult.result !== null) categories.push(this.applySubstitution(forwardApplicationResult.result, forwardApplicationResult.env));
+
         const backwardApplicationResult = this.applyBackward(left, right);
-        if (forwardApplicationResult.result !== null) categories.push(forwardApplicationResult.result);
-        if (backwardApplicationResult.result !== null) categories.push(backwardApplicationResult.result);
+        if (backwardApplicationResult.result !== null) categories.push(this.applySubstitution(backwardApplicationResult.result, backwardApplicationResult.env));
+
         return categories;
     }
 
+    private variableCounter = 0;
+
+    private renameVariables(cat: Category): Category {
+        const mapping = new Map<string, string>();
+        
+        const copyAndRename = (val: FeatureValue): FeatureValue => {
+            if (this.isVariable(val)) {
+                if (!mapping.has(val.id)) {
+                    this.variableCounter++;
+                    mapping.set(val.id, `${val.id}_${this.variableCounter}`);
+                }
+                return { kind: "Variable", id: mapping.get(val.id)! };
+            }
+            
+            if (Array.isArray(val)) {
+                return val.map(v => copyAndRename(v));
+            }
+            
+            if (this.isFeatureStructure(val)) {
+                const newFS: FeatureStructure = {};
+                for (const k in val) {
+                    newFS[k] = copyAndRename(val[k]);
+                }
+                return newFS;
+            }
+            
+            return val;
+        };
+
+        const traverseCategory = (c: Category): Category => {
+            if (this.isComplex(c)) {
+                return {
+                    kind: "ComplexCategory",
+                    direction: c.direction,
+                    argument: traverseCategory(c.argument),
+                    result: traverseCategory(c.result)
+                };
+            } else {
+                return {
+                    kind: "AtomicCategory",
+                    features: copyAndRename(c.features) as FeatureStructure
+                };
+            }
+        };
+
+        return traverseCategory(cat);
+    }
+
+    private applySubstitution(input: Category, env: Environment): Category {
+        if (this.isComplex(input)) {
+            return {
+                kind: "ComplexCategory",
+                direction: input.direction,
+                argument: this.applySubstitution(input.argument, env), // 再帰
+                result: this.applySubstitution(input.result, env)      // 再帰
+            };
+        } else {
+            return {
+                kind: "AtomicCategory",
+                features: this.applySubstitutionToStructure(input.features, env) as FeatureStructure
+            };
+        }
+    }
+
+    private applySubstitutionToStructure(val: FeatureValue, env: Environment): FeatureValue {
+        const resolved = this.resolve(val, env);
+        if (this.isVariable(resolved)) {
+            return resolved;
+        }
+        if (Array.isArray(resolved)) {
+            return resolved.map(item => this.applySubstitutionToStructure(item, env));
+        }
+        if (this.isFeatureStructure(resolved)) {
+            const newFS: FeatureStructure = {};
+            for (const key in resolved) {
+                newFS[key] = this.applySubstitutionToStructure(resolved[key], env);
+            }
+            return newFS;
+        }
+        return resolved;
+    }
+
     private applyForward(left: Category, right: Category): { result: Category | null, env: Environment } {
-        if(!this.isComplex(left)) return { result: null, env: {} };
+        if (!this.isComplex(left)) return { result: null, env: {} };
         const u = this.unifyCategory(left.argument, right, {});
-        if (left.direction === "/" && u !== null) return {result: left.result, env: u};
+        if (left.direction === "/" && u !== null) return { result: left.result, env: u };
         return { result: null, env: {} };
     }
 
     private applyBackward(left: Category, right: Category): { result: Category | null, env: Environment } {
-        if(!this.isComplex(right)) return { result: null, env: {} };
+        if (!this.isComplex(right)) return { result: null, env: {} };
         const u = this.unifyCategory(right.argument, left, {});
-        if (right.direction === "\\" && u !== null) return {result: right.result, env: u};
+        if (right.direction === "\\" && u !== null) return { result: right.result, env: u };
         return { result: null, env: {} };
     }
 
@@ -80,7 +200,7 @@ class CategorialGrammar implements Grammar<Category> {
     private unifyCategory(c1: Category, c2: Category, env: Environment): Environment | null {
         if (!this.isComplex(c1) && !this.isComplex(c2)) {
             const u = this.unify(c1.features, c2.features, env);
-            if (u.result) {
+            if (u.result !== null) {
                 return u.env
             } else {
                 return null;
