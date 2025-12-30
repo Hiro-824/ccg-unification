@@ -1,4 +1,4 @@
-import { Grammar } from "./parser";
+import { Grammar } from "../parser/parser";
 
 type Category = string;
 
