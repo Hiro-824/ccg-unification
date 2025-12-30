@@ -32,37 +32,3 @@ export function parse<T>(words: string[], grammar: Grammar<T>): T[] {
 
     return chart[length - 1][0];
 }
-
-type Category = string;
-
-class ContextFreeGrammar implements Grammar<Category> {
-    words: Record<string, Category[]> = {
-        "John": ["NP"],
-        "sees": ["V"],
-        "Mary": ["NP"],
-        "a": ["Det"],
-        "dog": ["N"]
-    };
-
-    rulesMap: Record<string, Category[]> = {
-        "NP VP": ["S"],
-        "V NP":  ["VP"],
-        "Det N": ["NP"]
-    };
-
-    getTerminalCategories(word: string): Category[] {
-        const categories = this.words[word];
-        return categories||[];
-    }
-
-    combine(left: Category, right: Category): Category[] {
-        const key = `${left} ${right}`;
-        return this.rulesMap[key] || [];
-    }
-}
-
-const grammar = new ContextFreeGrammar();
-const sentence = ["a", "dog", "sees", "dog"];
-
-const result = parse(sentence, grammar);
-console.log(result);
