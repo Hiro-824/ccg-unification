@@ -1,4 +1,4 @@
-import { Grammar, parse } from "./parser";
+import { Grammar } from "./parser";
 
 type Category = string;
 
@@ -28,8 +28,4 @@ class ContextFreeGrammar implements Grammar<Category> {
     }
 }
 
-const grammar = new ContextFreeGrammar();
-const sentence = ["a", "dog", "sees", "dog"];
-
-const result = parse(sentence, grammar);
-console.log(result);
+export const contextFreeGrammar = new ContextFreeGrammar();
