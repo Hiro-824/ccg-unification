@@ -57,6 +57,20 @@ export default function Home() {
               Categories with feature structures and unification.
             </p>
           </a>
+          <a
+            href="/var-ccg"
+            className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition hover:-translate-y-0.5 hover:border-slate-300 hover:shadow"
+          >
+            <div className="text-sm font-semibold uppercase tracking-[0.2em] text-slate-500">
+              Var CCG
+            </div>
+            <div className="text-lg font-semibold text-slate-900">
+              Feature-based CCG (Var)
+            </div>
+            <p className="mt-2 text-sm text-slate-600">
+              A copy of the complex CCG page for now; ready for future var tweaks.
+            </p>
+          </a>
         </section>
       </div>
     </main>
