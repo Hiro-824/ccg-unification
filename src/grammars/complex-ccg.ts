@@ -17,46 +17,29 @@ type ComplexCategory = {
     result: Category
 }
 
+const atom = (type: string, otherFeatures: Record<string, FeatureValue> = {}): AtomicCategory => ({
+    kind: "AtomicCategory",
+    features: { type, ...otherFeatures }
+});
+
+const complex = (result: Category, dir: "/" | "\\", arg: Category): ComplexCategory => ({
+    kind: "ComplexCategory",
+    direction: dir,
+    argument: arg,
+    result: result
+});
+
 class CategorialGrammar implements Grammar<Category> {
     words: Record<string, Category[]> = {
-        "John": [{
-            kind: "AtomicCategory",
-            features: {
-                type: "NP"
-            }
-        }],
-        "sees": [{
-            kind: "ComplexCategory",
-            direction: "/",
-            argument: {
-                kind: "AtomicCategory",
-                features: {
-                    type: "NP"
-                }
-            },
-            result: {
-                kind: "ComplexCategory",
-                direction: "\\",
-                argument: {
-                    kind: "AtomicCategory",
-                    features: {
-                        type: "NP"
-                    }
-                },
-                result: {
-                    kind: "AtomicCategory",
-                    features: {
-                        type: "S"
-                    }
-                }
-            }
-        }],
-        "Mary": [{
-            kind: "AtomicCategory",
-            features: {
-                type: "NP"
-            }
-        }],
+        "John": [atom("NP", {number: "singular", person: 3})],
+        "sees": [complex(complex(atom("S"), "\\", atom("NP", {number: "singular", person: 3})), "/", atom("NP"))],
+        "see": [
+            complex(complex(atom("S"), "\\", atom("NP", {number: "plural"})), "/", atom("NP")),
+            complex(complex(atom("S"), "\\", atom("NP", {number: "singular", person: 1})), "/", atom("NP")),
+            complex(complex(atom("S"), "\\", atom("NP", {number: "singular", person: 2})), "/", atom("NP")),
+        ],
+        "Mary": [atom("NP", {number: "singular", person: 3})],
+        "People": [atom("NP", {number: "plural", person: 3})]
     };
 
     getTerminalCategories(word: string): Category[] {
