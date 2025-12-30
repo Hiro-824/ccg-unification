@@ -31,15 +31,15 @@ const complex = (result: Category, dir: "/" | "\\", arg: Category): ComplexCateg
 
 class CategorialGrammar implements Grammar<Category> {
     words: Record<string, Category[]> = {
-        "John": [atom("NP", {number: "singular", person: 3})],
-        "sees": [complex(complex(atom("S"), "\\", atom("NP", {number: "singular", person: 3})), "/", atom("NP"))],
+        "John": [atom("NP", { number: "singular", person: 3 })],
+        "sees": [complex(complex(atom("S"), "\\", atom("NP", { number: "singular", person: 3 })), "/", atom("NP"))],
         "see": [
-            complex(complex(atom("S"), "\\", atom("NP", {number: "plural"})), "/", atom("NP")),
-            complex(complex(atom("S"), "\\", atom("NP", {number: "singular", person: 1})), "/", atom("NP")),
-            complex(complex(atom("S"), "\\", atom("NP", {number: "singular", person: 2})), "/", atom("NP")),
+            complex(complex(atom("S"), "\\", atom("NP", { number: "plural" })), "/", atom("NP")),
+            complex(complex(atom("S"), "\\", atom("NP", { number: "singular", person: 1 })), "/", atom("NP")),
+            complex(complex(atom("S"), "\\", atom("NP", { number: "singular", person: 2 })), "/", atom("NP")),
         ],
-        "Mary": [atom("NP", {number: "singular", person: 3})],
-        "People": [atom("NP", {number: "plural", person: 3})]
+        "Mary": [atom("NP", { number: "singular", person: 3 })],
+        "People": [atom("NP", { number: "plural", person: 3 })]
     };
 
     getTerminalCategories(word: string): Category[] {
@@ -71,7 +71,7 @@ class CategorialGrammar implements Grammar<Category> {
 
     private isEqual(c1: Category, c2: Category): boolean {
         if (!this.isComplex(c1) && !this.isComplex(c2)) {
-            return this.canUnify(c1.features, c2.features);
+            return (this.unify(c1.features, c2.features) !== null);
         }
         if (this.isComplex(c1) && this.isComplex(c2)) {
             return (c1.direction === c2.direction && this.isEqual(c1.argument, c2.argument) && this.isEqual(c1.result, c2.result))
@@ -87,25 +87,39 @@ class CategorialGrammar implements Grammar<Category> {
         );
     }
 
-    private canUnify(a: FeatureValue, b: FeatureValue): boolean {
-        if (a === b) return true;
+    private unify(a: FeatureValue, b: FeatureValue): FeatureValue | null {
+        if (a === b) return a;
 
         if (Array.isArray(a) && Array.isArray(b)) {
-            if (a.length !== b.length) return false;
-            return a.every((val, i) => this.canUnify(val, b[i]));
+            if (a.length !== b.length) return null;
+            const newArray: FeatureValue[] = [];
+            for (let i = 0; i < a.length; i++) {
+                const u = this.unify(a[i], b[i]);
+                if (u === null) return null;
+                newArray.push(u);
+            }
+            return newArray;
         }
 
         if (this.isFeatureStructure(a) && this.isFeatureStructure(b)) {
-            for (const key of Object.keys(a)) {
+            const newFeatures: FeatureStructure = {};
+            for (const key in a) {
                 if (key in b) {
-                    if (!this.canUnify(a[key], b[key])) {
-                        return false;
-                    }
+                    const u = this.unify(a[key], b[key]);
+                    if (u === null) return null;
+                    newFeatures[key] = u;
+                } else {
+                    newFeatures[key] = a[key];
                 }
             }
-            return true;
+            for (const key in b) {
+                if (!(key in a)) {
+                    newFeatures[key] = b[key];
+                }
+            }
+            return newFeatures;
         }
-        return false;
+        return null;
     }
 }
 
