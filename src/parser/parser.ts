@@ -40,6 +40,8 @@ class ContextFreeGrammar implements Grammar<Category> {
         "John": ["NP"],
         "sees": ["V"],
         "Mary": ["NP"],
+        "a": ["Det"],
+        "dog": ["N"]
     };
 
     rulesMap: Record<string, Category[]> = {
@@ -58,3 +60,9 @@ class ContextFreeGrammar implements Grammar<Category> {
         return this.rulesMap[key] || [];
     }
 }
+
+const grammar = new ContextFreeGrammar();
+const sentence = ["a", "dog", "sees", "dog"];
+
+const result = parse(sentence, grammar);
+console.log(result);
