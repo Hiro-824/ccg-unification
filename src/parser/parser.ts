@@ -1,5 +1,5 @@
 export interface Grammar<T> {
-    getTerminalCategories(words: string): T[];
+    getTerminalCategories(word: string): T[];
     combine(left: T, right: T): T[];
 }
 
