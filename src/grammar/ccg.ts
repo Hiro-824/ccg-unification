@@ -96,7 +96,7 @@ class CategorialGrammar implements Grammar<Category> {
 
     private variableCounter = 0;
 
-    private renameVariablesInCategory(cat: Category): Category {
+    renameVariablesInCategory(cat: Category): Category {
         const mapping = new Map<string, string>();
 
         const generateId = () => {
@@ -123,25 +123,25 @@ class CategorialGrammar implements Grammar<Category> {
         return traverseCategory(cat);
     }
 
-    private applyForward(left: Category, right: Category): { result: Category | null, env: Environment } {
+    applyForward(left: Category, right: Category): { result: Category | null, env: Environment } {
         if (!this.isComplex(left)) return { result: null, env: {} };
         const u = this.unifyCategory(left.argument, right, {});
         if (left.direction === "/" && u !== null) return { result: left.result, env: u };
         return { result: null, env: {} };
     }
 
-    private applyBackward(left: Category, right: Category): { result: Category | null, env: Environment } {
+    applyBackward(left: Category, right: Category): { result: Category | null, env: Environment } {
         if (!this.isComplex(right)) return { result: null, env: {} };
         const u = this.unifyCategory(right.argument, left, {});
         if (right.direction === "\\" && u !== null) return { result: right.result, env: u };
         return { result: null, env: {} };
     }
 
-    private isComplex(c: Category): c is ComplexCategory {
+    isComplex(c: Category): c is ComplexCategory {
         return c.kind === "ComplexCategory";
     }
 
-    private unifyCategory(c1: Category, c2: Category, env: Environment): Environment | null {
+    unifyCategory(c1: Category, c2: Category, env: Environment): Environment | null {
         if (!this.isComplex(c1) && !this.isComplex(c2)) {
             const u = this.fs.unify(c1.features, c2.features, env);
             if (u.result !== null) {

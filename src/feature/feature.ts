@@ -69,7 +69,7 @@ export class FeatureSystem {
         );
     }
 
-    private resolve(value: FeatureValue, env: Environment): FeatureValue {
+    resolve(value: FeatureValue, env: Environment): FeatureValue {
         if (this.isVariable(value)) {
             if (value.id in env) {
                 const boundValue = env[value.id];
