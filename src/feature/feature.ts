@@ -7,6 +7,34 @@ export type Environment = Record<string, FeatureValue>;
 
 export class FeatureSystem {
 
+    renameVariablesInValue(
+        val: FeatureValue,
+        mapping: Map<string, string>,
+        idGenerator: () => string
+    ): FeatureValue {
+
+        if (this.isVariable(val)) {
+            if (!mapping.has(val.id)) {
+                mapping.set(val.id, idGenerator());
+            }
+            return { kind: "Variable", id: mapping.get(val.id)! };
+        }
+
+        if (Array.isArray(val)) {
+            return val.map(v => this.renameVariablesInValue(v, mapping, idGenerator));
+        }
+
+        if (this.isFeatureStructure(val)) {
+            const newFS: FeatureStructure = {};
+            for (const k in val) {
+                newFS[k] = this.renameVariablesInValue(val[k], mapping, idGenerator);
+            }
+            return newFS;
+        }
+
+        return val;
+    }
+
     applySubstitutionToStructure(val: FeatureValue, env: Environment): FeatureValue {
         const resolved = this.resolve(val, env);
         if (this.isVariable(resolved)) {

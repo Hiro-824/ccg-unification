@@ -79,7 +79,7 @@ class CategorialGrammar implements Grammar<Category> {
 
     getTerminalCategories(word: string): Category[] {
         const categories = this.words[word] || [];
-        return categories.map(cat => this.renameVariables(cat));
+        return categories.map(cat => this.renameVariablesInCategory(cat));
     }
 
     combine(left: Category, right: Category): Category[] {
@@ -96,31 +96,12 @@ class CategorialGrammar implements Grammar<Category> {
 
     private variableCounter = 0;
 
-    private renameVariables(cat: Category): Category {
+    private renameVariablesInCategory(cat: Category): Category {
         const mapping = new Map<string, string>();
 
-        const copyAndRename = (val: FeatureValue): FeatureValue => {
-            if (this.fs.isVariable(val)) {
-                if (!mapping.has(val.id)) {
-                    this.variableCounter++;
-                    mapping.set(val.id, `${val.id}_${this.variableCounter}`);
-                }
-                return { kind: "Variable", id: mapping.get(val.id)! };
-            }
-
-            if (Array.isArray(val)) {
-                return val.map(v => copyAndRename(v));
-            }
-
-            if (this.fs.isFeatureStructure(val)) {
-                const newFS: FeatureStructure = {};
-                for (const k in val) {
-                    newFS[k] = copyAndRename(val[k]);
-                }
-                return newFS;
-            }
-
-            return val;
+        const generateId = () => {
+            this.variableCounter++;
+            return `var_${this.variableCounter}`;
         };
 
         const traverseCategory = (c: Category): Category => {
@@ -134,7 +115,7 @@ class CategorialGrammar implements Grammar<Category> {
             } else {
                 return {
                     kind: "AtomicCategory",
-                    features: copyAndRename(c.features) as FeatureStructure
+                    features: this.fs.renameVariablesInValue(c.features, mapping, generateId) as FeatureStructure
                 };
             }
         };
