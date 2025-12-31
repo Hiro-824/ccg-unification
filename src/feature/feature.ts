@@ -69,19 +69,6 @@ export class FeatureSystem {
         );
     }
 
-    resolve(value: FeatureValue, env: Environment): FeatureValue {
-        if (this.isVariable(value)) {
-            if (value.id in env) {
-                const boundValue = env[value.id];
-                return this.resolve(boundValue, env);
-            } else {
-                return value;
-            }
-        } else {
-            return value;
-        }
-    }
-
     unify(a: FeatureValue, b: FeatureValue, originalEnv: Environment): { result: FeatureValue | null, env: Environment } {
 
         let env: Environment = JSON.parse(JSON.stringify(originalEnv));
@@ -134,5 +121,18 @@ export class FeatureSystem {
             return { result: newFeatures, env: env };
         }
         return { result: null, env: env };
+    }
+
+    private resolve(value: FeatureValue, env: Environment): FeatureValue {
+        if (this.isVariable(value)) {
+            if (value.id in env) {
+                const boundValue = env[value.id];
+                return this.resolve(boundValue, env);
+            } else {
+                return value;
+            }
+        } else {
+            return value;
+        }
     }
 }
