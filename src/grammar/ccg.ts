@@ -92,6 +92,12 @@ class CategorialGrammar implements Grammar<Category> {
         const backwardApplicationResult = this.applyBackward(left, right);
         if (backwardApplicationResult.result !== null) categories.push(this.applySubstitution(backwardApplicationResult.result, backwardApplicationResult.env));
 
+        const composedForwardResult = this.composeForward(left, right);
+        if (composedForwardResult.result !== null) categories.push(this.applySubstitution(composedForwardResult.result, composedForwardResult.env));
+
+        const composedBackwardResult = this.composeBackward(left, right);
+        if (composedBackwardResult.result !== null) categories.push(this.applySubstitution(composedBackwardResult.result, composedBackwardResult.env));
+
         return categories;
     }
 
