@@ -1,19 +1,6 @@
 import { Environment, FeatureStructure, FeatureSystem, FeatureValue, Variable } from "../feature/feature";
 import { Grammar } from "../parser/parser";
-
-type Category = AtomicCategory | ComplexCategory;
-
-type AtomicCategory = {
-    kind: "AtomicCategory",
-    features: FeatureStructure
-};
-
-type ComplexCategory = {
-    kind: "ComplexCategory"
-    direction: "/" | "\\",
-    argument: Category,
-    result: Category
-}
+import { Category, AtomicCategory, ComplexCategory } from "../lexicon/types";
 
 const atom = (type: string, otherFeatures: Record<string, FeatureValue> = {}): AtomicCategory => ({
     kind: "AtomicCategory",
