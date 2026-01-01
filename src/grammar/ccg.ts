@@ -109,6 +109,28 @@ class CategorialGrammar implements Grammar<Category> {
         return { result: null, env: {} };
     }
 
+    private composeForward(left: Category, right: Category): { result: Category | null, env: Environment } {
+        if (!this.isComplex(left) || !this.isComplex(right)) return { result: null, env: {} };
+        if (left.direction !== "/" || right.direction !== "/") return { result: null, env: {} };
+        const u = this.unifyCategory(left.argument, right.result, {});
+        if(u !== null) {
+            const result = complex(left.result, "/", right.argument);
+            return { result: result, env: u };
+        };
+        return { result: null, env: {} };
+    }
+
+    private composeBackward(left: Category, right: Category): { result: Category | null, env: Environment } {
+        if (!this.isComplex(left) || !this.isComplex(right)) return { result: null, env: {} };
+        if (left.direction !== "\\" || right.direction !== "\\") return { result: null, env: {} };
+        const u = this.unifyCategory(left.result, right.argument, {});
+        if(u !== null) {
+            const result = complex(right.result, "\\", left.argument);
+            return { result: result, env: u };
+        }
+        return { result: null, env: {} };
+    }
+
     private isComplex(c: Category): c is ComplexCategory {
         return c.kind === "ComplexCategory";
     }
