@@ -1,72 +1,19 @@
-import { Environment, FeatureStructure, FeatureSystem, FeatureValue, Variable } from "../feature/feature";
+import { Environment, FeatureStructure, FeatureSystem } from "../feature/feature";
 import { Grammar } from "../parser/parser";
-import { Category, AtomicCategory, ComplexCategory } from "../lexicon/types";
-
-const atom = (type: string, otherFeatures: Record<string, FeatureValue> = {}): AtomicCategory => ({
-    kind: "AtomicCategory",
-    features: { type, ...otherFeatures }
-});
-
-const complex = (result: Category, dir: "/" | "\\", arg: Category): ComplexCategory => ({
-    kind: "ComplexCategory",
-    direction: dir,
-    argument: arg,
-    result: result
-});
-
-const v = (id: string): Variable => ({ kind: "Variable", id });
+import { Category, ComplexCategory } from "../lexicon/types";
+import { complex, Lexicon } from "../lexicon/lexicon";
 
 class CategorialGrammar implements Grammar<Category> {
 
     private fs = new FeatureSystem();
     private variableCounter = 0;
+    private lexicon: Lexicon;
 
-    words: Record<string, Category[]> = {
-        "John": [atom("NP", { num: "sg", pers: 3, gender: "m" })],
-        "Mary": [atom("NP", { num: "sg", pers: 3, gender: "f" })],
-        "sees": [
-            complex(
-                complex(atom("S"), "\\", atom("NP", { num: "sg", pers: 3, index: v("s") })),
-                "/",
-                atom("NP", { index: v("o") })
-            )
-        ],
-        "himself": [
-            complex(
-                complex(atom("S"), "\\", atom("NP", { index: v("x"), gender: "m" })),
-                "\\",
-                complex(
-                    complex(atom("S"), "\\", atom("NP", { index: v("x") })),
-                    "/",
-                    atom("NP", { index: v("x") })
-                )
-            )
-        ],
-        "dogs": [atom("NP", { num: "pl" })],
-        "dog": [atom("NP", { num: "sg" })],
-        "run": [complex(atom("S"), "\\", atom("NP", { num: "pl" }))],
-        "runs": [complex(atom("S"), "\\", atom("NP", { num: "sg" }))],
-        "that": [
-            complex(
-                // Result: NP[?x] \ NP[?x]  (名詞修飾語)
-                complex(
-                    atom("NP", { num: v("x") }),
-                    "\\",
-                    atom("NP", { num: v("x") })
-                ),
-                "/",
-                // Argument: S \ NP[?x] (主語が欠けた動詞句)
-                complex(
-                    atom("S"),
-                    "\\",
-                    atom("NP", { num: v("x") })
-                )
-            )
-        ],
-    };
-
+    constructor(lexicon: Lexicon) {
+        this.lexicon = lexicon;
+    }
     getTerminalCategories(word: string): Category[] {
-        const categories = this.words[word] || [];
+        const categories = this.lexicon.get(word);
         return categories.map(cat => this.renameVariablesInCategory(cat));
     }
 
@@ -193,4 +140,4 @@ class CategorialGrammar implements Grammar<Category> {
     }
 }
 
-export const complexCategorialGrammar = new CategorialGrammar();
+export const complexCategorialGrammar = (lexicon: Lexicon) => new CategorialGrammar(lexicon);
