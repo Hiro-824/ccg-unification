@@ -1,85 +1,19 @@
-import { Environment, FeatureStructure, FeatureSystem, FeatureValue, Variable } from "../feature/feature";
+import { Environment, FeatureStructure, FeatureSystem } from "../feature/feature";
 import { Grammar } from "../parser/parser";
+import { Category, ComplexCategory } from "../lexicon/types";
+import { complex, Lexicon } from "../lexicon/lexicon";
 
-type Category = AtomicCategory | ComplexCategory;
-
-type AtomicCategory = {
-    kind: "AtomicCategory",
-    features: FeatureStructure
-};
-
-type ComplexCategory = {
-    kind: "ComplexCategory"
-    direction: "/" | "\\",
-    argument: Category,
-    result: Category
-}
-
-const atom = (type: string, otherFeatures: Record<string, FeatureValue> = {}): AtomicCategory => ({
-    kind: "AtomicCategory",
-    features: { type, ...otherFeatures }
-});
-
-const complex = (result: Category, dir: "/" | "\\", arg: Category): ComplexCategory => ({
-    kind: "ComplexCategory",
-    direction: dir,
-    argument: arg,
-    result: result
-});
-
-const v = (id: string): Variable => ({ kind: "Variable", id });
-
-class CategorialGrammar implements Grammar<Category> {
+export class CombinatoryCategorialGrammar implements Grammar<Category> {
 
     private fs = new FeatureSystem();
     private variableCounter = 0;
+    private lexicon: Lexicon;
 
-    words: Record<string, Category[]> = {
-        "John": [atom("NP", { num: "sg", pers: 3, gender: "m" })],
-        "Mary": [atom("NP", { num: "sg", pers: 3, gender: "f" })],
-        "sees": [
-            complex(
-                complex(atom("S"), "\\", atom("NP", { num: "sg", pers: 3, index: v("s") })),
-                "/",
-                atom("NP", { index: v("o") })
-            )
-        ],
-        "himself": [
-            complex(
-                complex(atom("S"), "\\", atom("NP", { index: v("x"), gender: "m" })),
-                "\\",
-                complex(
-                    complex(atom("S"), "\\", atom("NP", { index: v("x") })),
-                    "/",
-                    atom("NP", { index: v("x") })
-                )
-            )
-        ],
-        "dogs": [atom("NP", { num: "pl" })],
-        "dog": [atom("NP", { num: "sg" })],
-        "run": [complex(atom("S"), "\\", atom("NP", { num: "pl" }))],
-        "runs": [complex(atom("S"), "\\", atom("NP", { num: "sg" }))],
-        "that": [
-            complex(
-                // Result: NP[?x] \ NP[?x]  (名詞修飾語)
-                complex(
-                    atom("NP", { num: v("x") }),
-                    "\\",
-                    atom("NP", { num: v("x") })
-                ),
-                "/",
-                // Argument: S \ NP[?x] (主語が欠けた動詞句)
-                complex(
-                    atom("S"),
-                    "\\",
-                    atom("NP", { num: v("x") })
-                )
-            )
-        ],
-    };
-
+    constructor(lexicon: Lexicon) {
+        this.lexicon = lexicon;
+    }
     getTerminalCategories(word: string): Category[] {
-        const categories = this.words[word] || [];
+        const categories = this.lexicon.get(word);
         return categories.map(cat => this.renameVariablesInCategory(cat));
     }
 
@@ -91,6 +25,12 @@ class CategorialGrammar implements Grammar<Category> {
 
         const backwardApplicationResult = this.applyBackward(left, right);
         if (backwardApplicationResult.result !== null) categories.push(this.applySubstitution(backwardApplicationResult.result, backwardApplicationResult.env));
+
+        const composedForwardResult = this.composeForward(left, right);
+        if (composedForwardResult.result !== null) categories.push(this.applySubstitution(composedForwardResult.result, composedForwardResult.env));
+
+        const composedBackwardResult = this.composeBackward(left, right);
+        if (composedBackwardResult.result !== null) categories.push(this.applySubstitution(composedBackwardResult.result, composedBackwardResult.env));
 
         return categories;
     }
@@ -106,6 +46,28 @@ class CategorialGrammar implements Grammar<Category> {
         if (!this.isComplex(right)) return { result: null, env: {} };
         const u = this.unifyCategory(right.argument, left, {});
         if (right.direction === "\\" && u !== null) return { result: right.result, env: u };
+        return { result: null, env: {} };
+    }
+
+    private composeForward(left: Category, right: Category): { result: Category | null, env: Environment } {
+        if (!this.isComplex(left) || !this.isComplex(right)) return { result: null, env: {} };
+        if (left.direction !== "/" || right.direction !== "/") return { result: null, env: {} };
+        const u = this.unifyCategory(left.argument, right.result, {});
+        if(u !== null) {
+            const result = complex(left.result, "/", right.argument);
+            return { result: result, env: u };
+        };
+        return { result: null, env: {} };
+    }
+
+    private composeBackward(left: Category, right: Category): { result: Category | null, env: Environment } {
+        if (!this.isComplex(left) || !this.isComplex(right)) return { result: null, env: {} };
+        if (left.direction !== "\\" || right.direction !== "\\") return { result: null, env: {} };
+        const u = this.unifyCategory(left.result, right.argument, {});
+        if(u !== null) {
+            const result = complex(right.result, "\\", left.argument);
+            return { result: result, env: u };
+        }
         return { result: null, env: {} };
     }
 
@@ -177,5 +139,3 @@ class CategorialGrammar implements Grammar<Category> {
         }
     }
 }
-
-export const complexCategorialGrammar = new CategorialGrammar();
