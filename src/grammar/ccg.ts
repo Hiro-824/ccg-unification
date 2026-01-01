@@ -3,7 +3,7 @@ import { Grammar } from "../parser/parser";
 import { Category, ComplexCategory } from "../lexicon/types";
 import { complex, Lexicon } from "../lexicon/lexicon";
 
-class CategorialGrammar implements Grammar<Category> {
+export class CombinatoryCategorialGrammar implements Grammar<Category> {
 
     private fs = new FeatureSystem();
     private variableCounter = 0;
@@ -139,5 +139,3 @@ class CategorialGrammar implements Grammar<Category> {
         }
     }
 }
-
-export const complexCategorialGrammar = (lexicon: Lexicon) => new CategorialGrammar(lexicon);
