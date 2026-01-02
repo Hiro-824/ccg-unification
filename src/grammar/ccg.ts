@@ -1,140 +1,154 @@
-import { Environment, FeatureStructure, FeatureSystem } from "../feature/feature";
-import { Grammar } from "../parser/parser";
-import { Category, ComplexCategory } from "../lexicon/types";
-import { complex, Lexicon } from "../lexicon/lexicon";
+import { Grammar } from "../parser/parser"
 
-export class CombinatoryCategorialGrammar implements Grammar<Category> {
+type Category<P> = AtomicCategory<P> | ComplexCategory<P>
+type AtomicCategory<P> = {
+    kind: "AtomicCategory"
+    payload: P
+}
+type ComplexCategory<P> = {
+    kind: "ComplexCategory",
+    direction: "/" | "\\",
+    result: Category<P>,
+    argument: Category<P>
+}
 
-    private fs = new FeatureSystem();
-    private variableCounter = 0;
-    private lexicon: Lexicon;
+export interface Unifier<P, Env> {
+    createEmptyEnv(): Env;
+    unify(a: P, b: P, prev: Env): Env | null;
+    apply(a: P, env: Env): P;
+    refresh(a: P): P;
+}
 
-    constructor(lexicon: Lexicon) {
-        this.lexicon = lexicon;
-    }
-    getTerminalCategories(word: string): Category[] {
-        const categories = this.lexicon.get(word);
-        return categories.map(cat => this.renameVariablesInCategory(cat));
-    }
+export class CCG<P, Env> implements Grammar<Category<P>> {
 
-    combine(left: Category, right: Category): Category[] {
-        const categories: Category[] = [];
+    constructor(
+        private lexicon: Record<string, Category<P>[]>,
+        private unifier: Unifier<P, Env>,
+    ) { }
 
-        const forwardApplicationResult = this.applyForward(left, right);
-        if (forwardApplicationResult.result !== null) categories.push(this.applySubstitution(forwardApplicationResult.result, forwardApplicationResult.env));
-
-        const backwardApplicationResult = this.applyBackward(left, right);
-        if (backwardApplicationResult.result !== null) categories.push(this.applySubstitution(backwardApplicationResult.result, backwardApplicationResult.env));
-
-        const composedForwardResult = this.composeForward(left, right);
-        if (composedForwardResult.result !== null) categories.push(this.applySubstitution(composedForwardResult.result, composedForwardResult.env));
-
-        const composedBackwardResult = this.composeBackward(left, right);
-        if (composedBackwardResult.result !== null) categories.push(this.applySubstitution(composedBackwardResult.result, composedBackwardResult.env));
-
-        return categories;
+    getTerminalCategories(word: string): Category<P>[] {
+        const categories = this.lexicon[word] || [];
+        return categories.map(cat => this.refreshCategory(cat));
     }
 
-    private applyForward(left: Category, right: Category): { result: Category | null, env: Environment } {
-        if (!this.isComplex(left)) return { result: null, env: {} };
-        const u = this.unifyCategory(left.argument, right, {});
-        if (left.direction === "/" && u !== null) return { result: left.result, env: u };
-        return { result: null, env: {} };
+    combine(left: Category<P>, right: Category<P>): Category<P>[] {
+        const results: Category<P>[] = [];
+
+        // Forward Application ( > )
+        const forwardResult = this.applyForward(left, right);
+        if (forwardResult) results.push(forwardResult);
+
+        // Backward Application ( < )
+        const backwardResult = this.applyBackward(left, right);
+        if (backwardResult) results.push(backwardResult);
+
+        // Forward Composition ( B> )
+        const forwardCompositionResult = this.composeForward(left, right);
+        if (forwardCompositionResult) results.push(forwardCompositionResult);
+
+        // Backward Composition ( B< )
+        const backwardCompositionResult = this.composeBackward(left, right);
+        if (backwardCompositionResult) results.push(backwardCompositionResult);
+
+        return results;
     }
 
-    private applyBackward(left: Category, right: Category): { result: Category | null, env: Environment } {
-        if (!this.isComplex(right)) return { result: null, env: {} };
-        const u = this.unifyCategory(right.argument, left, {});
-        if (right.direction === "\\" && u !== null) return { result: right.result, env: u };
-        return { result: null, env: {} };
+    private applyForward(left: Category<P>, right: Category<P>): Category<P> | null {
+        const env = this.unifier.createEmptyEnv();
+        if (!this.isComplex(left) || left.direction !== "/") return null;
+        const resultEnv = this.unifyCategory(left.argument, right, env);
+        if (resultEnv !== null) return this.applyEnv(left.result, env);
+        return null;
     }
 
-    private composeForward(left: Category, right: Category): { result: Category | null, env: Environment } {
-        if (!this.isComplex(left) || !this.isComplex(right)) return { result: null, env: {} };
-        if (left.direction !== "/" || right.direction !== "/") return { result: null, env: {} };
-        const u = this.unifyCategory(left.argument, right.result, {});
-        if(u !== null) {
-            const result = complex(left.result, "/", right.argument);
-            return { result: result, env: u };
-        };
-        return { result: null, env: {} };
+    private applyBackward(left: Category<P>, right: Category<P>): Category<P> | null {
+        const env = this.unifier.createEmptyEnv();
+        if (!this.isComplex(right) || right.direction !== "\\") return null;
+        const resultEnv = this.unifyCategory(left, right.argument, env);
+        if (resultEnv !== null) return this.applyEnv(right.result, env);
+        return null;
     }
 
-    private composeBackward(left: Category, right: Category): { result: Category | null, env: Environment } {
-        if (!this.isComplex(left) || !this.isComplex(right)) return { result: null, env: {} };
-        if (left.direction !== "\\" || right.direction !== "\\") return { result: null, env: {} };
-        const u = this.unifyCategory(left.result, right.argument, {});
-        if(u !== null) {
-            const result = complex(right.result, "\\", left.argument);
-            return { result: result, env: u };
+    private composeForward(left: Category<P>, right: Category<P>): Category<P> | null {
+        if (!this.isComplex(left) || left.direction !== "/") return null;
+        if (!this.isComplex(right) || right.direction !== "/") return null;
+
+        const env = this.unifier.createEmptyEnv();
+        const resultEnv = this.unifyCategory(left.argument, right.result, env);
+
+        if (resultEnv !== null) {
+            return {
+                kind: "ComplexCategory",
+                direction: "/",
+                result: this.applyEnv(left.result, resultEnv),
+                argument: this.applyEnv(right.argument, resultEnv)
+            };
         }
-        return { result: null, env: {} };
+        return null;
     }
 
-    private isComplex(c: Category): c is ComplexCategory {
+    private composeBackward(left: Category<P>, right: Category<P>): Category<P> | null {
+        if (!this.isComplex(left) || left.direction !== "\\") return null;
+        if (!this.isComplex(right) || right.direction !== "\\") return null;
+
+        const env = this.unifier.createEmptyEnv();
+        const resultEnv = this.unifyCategory(left.result, right.argument, env);
+
+        if (resultEnv !== null) {
+            return {
+                kind: "ComplexCategory",
+                direction: "\\",
+                result: this.applyEnv(right.result, resultEnv),
+                argument: this.applyEnv(left.argument, resultEnv)
+            };
+        }
+        return null;
+    }
+
+    private unifyCategory(a: Category<P>, b: Category<P>, env: Env): Env | null {
+        if (a.kind === "AtomicCategory" && b.kind === "AtomicCategory") {
+            return this.unifier.unify(a.payload, b.payload, env);
+        }
+        if (a.kind === "ComplexCategory" && b.kind === "ComplexCategory" && a.direction === b.direction) {
+            const argumentEnv = this.unifyCategory(a.argument, b.argument, env);
+            if (argumentEnv === null) return null;
+            return this.unifyCategory(a.result, b.result, argumentEnv);
+        }
+        return null;
+    }
+
+    private applyEnv(a: Category<P>, env: Env): Category<P> {
+        if (a.kind === "AtomicCategory") {
+            return {
+                kind: "AtomicCategory",
+                payload: this.unifier.apply(a.payload, env)
+            };
+        } else {
+            return {
+                kind: "ComplexCategory",
+                direction: a.direction,
+                result: this.applyEnv(a.result, env),
+                argument: this.applyEnv(a.argument, env)
+            }
+        }
+    }
+
+    private isComplex(c: Category<P>): c is ComplexCategory<P> {
         return c.kind === "ComplexCategory";
     }
 
-    private unifyCategory(c1: Category, c2: Category, env: Environment): Environment | null {
-        if (!this.isComplex(c1) && !this.isComplex(c2)) {
-            const u = this.fs.unify(c1.features, c2.features, env);
-            if (u.result !== null) {
-                return u.env
-            } else {
-                return null;
-            }
-        }
-        if (this.isComplex(c1) && this.isComplex(c2)) {
-            if (c1.direction !== c2.direction) return null;
-
-            const envAfterArg = this.unifyCategory(c1.argument, c2.argument, env);
-            if (!envAfterArg) return null;
-
-            const envAfterRes = this.unifyCategory(c1.result, c2.result, envAfterArg);
-            return envAfterRes;
-        }
-        return null
-    }
-
-    private renameVariablesInCategory(cat: Category): Category {
-        const mapping = new Map<string, string>();
-
-        const generateId = () => {
-            this.variableCounter++;
-            return `var_${this.variableCounter}`;
-        };
-
-        const traverseCategory = (c: Category): Category => {
-            if (this.isComplex(c)) {
-                return {
-                    kind: "ComplexCategory",
-                    direction: c.direction,
-                    argument: traverseCategory(c.argument),
-                    result: traverseCategory(c.result)
-                };
-            } else {
-                return {
-                    kind: "AtomicCategory",
-                    features: this.fs.renameVariablesInValue(c.features, mapping, generateId) as FeatureStructure
-                };
-            }
-        };
-
-        return traverseCategory(cat);
-    }
-
-    private applySubstitution(input: Category, env: Environment): Category {
-        if (this.isComplex(input)) {
+    private refreshCategory(category: Category<P>): Category<P> {
+        if (category.kind === "ComplexCategory") {
             return {
                 kind: "ComplexCategory",
-                direction: input.direction,
-                argument: this.applySubstitution(input.argument, env), // 再帰
-                result: this.applySubstitution(input.result, env)      // 再帰
+                direction: category.direction,
+                argument: this.refreshCategory(category.argument),
+                result: this.refreshCategory(category.result)
             };
         } else {
             return {
                 kind: "AtomicCategory",
-                features: this.fs.applySubstitutionToStructure(input.features, env) as FeatureStructure
+                payload: this.unifier.refresh(category.payload)
             };
         }
     }
