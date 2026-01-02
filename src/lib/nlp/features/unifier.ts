@@ -1,11 +1,5 @@
-import { Unifier } from "../grammar/ccg"
-
-export interface FeatureStructure {
-    [key: string]: FeatureValue;
-}
-export type Variable = { kind: "Variable", id: string };
-export type FeatureValue = string | number | boolean | FeatureStructure | FeatureValue[] | Variable;
-export type Environment = Record<string, FeatureValue>;
+import { Unifier } from "../ccg/grammar"
+import { FeatureStructure, Environment, FeatureValue, Variable } from "./types";
 
 export class FeatureStructureUnifier implements Unifier<FeatureStructure, Environment> {
 

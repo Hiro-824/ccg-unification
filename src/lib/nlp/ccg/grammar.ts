@@ -1,16 +1,5 @@
-import { Grammar } from "../parser/parser"
-
-type Category<P> = AtomicCategory<P> | ComplexCategory<P>
-type AtomicCategory<P> = {
-    kind: "AtomicCategory"
-    payload: P
-}
-type ComplexCategory<P> = {
-    kind: "ComplexCategory",
-    direction: "/" | "\\",
-    result: Category<P>,
-    argument: Category<P>
-}
+import { Grammar } from "../core/parser"
+import { Category, ComplexCategory } from "./types";
 
 export interface Unifier<P, Env> {
     createEmptyEnv(): Env;
