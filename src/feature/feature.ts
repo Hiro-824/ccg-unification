@@ -71,7 +71,7 @@ export class FeatureSystem {
 
     unify(a: FeatureValue, b: FeatureValue, originalEnv: Environment): { result: FeatureValue | null, env: Environment } {
 
-        let env: Environment = JSON.parse(JSON.stringify(originalEnv));
+        let env: Environment = { ...originalEnv };
 
         a = this.resolve(a, env);
         b = this.resolve(b, env);
