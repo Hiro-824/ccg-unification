@@ -1,4 +1,4 @@
-import { Environment, FeatureStructure, FeatureSystem } from "../feature/feature";
+import { Environment, FeatureStructure, FeatureSystem } from "../old/old-feature";
 import { Grammar } from "../parser/parser";
 import { Category, ComplexCategory } from "../lexicon/types";
 import { complex, Lexicon } from "../lexicon/lexicon";
