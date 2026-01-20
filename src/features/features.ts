@@ -46,6 +46,17 @@ class FeatureStructure {
         return this._features.keys();
     }
 
+    getIn(path: Attribute[]): FeatureStructure | undefined {
+        if (path.length === 0) return this;
+        if (this._isAtomic) return undefined;
+    
+        const head = path[0];
+        const child = this._features.get(head);
+    
+        if (!child) return undefined;
+        return child.getIn(path.slice(1));
+    }
+    
     toString(): string {
         if(this._isAtomic) {
             return this._atomicValue!;
