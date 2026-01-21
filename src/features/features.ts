@@ -101,3 +101,45 @@ export function unify(fs1: FeatureStructure, fs2: FeatureStructure): FeatureStru
 
     return result;
 }
+
+type TypeName = string;
+
+class TypeSystem {
+    private _typeHierarchy: Map<TypeName, TypeName> = new Map();
+
+    constructor() {
+        this._typeHierarchy.set("top", "top");
+    }
+
+    addType(type: TypeName, parentType: TypeName) {
+        this._typeHierarchy.set(type, parentType);
+    }
+
+    isSubtype(subtype: TypeName, parentType: TypeName): boolean {
+        if(subtype === parentType) return true;
+        if(parentType === "top") return true;
+        let current = subtype;
+        while(current !== "top") {
+            const nextParent = this._typeHierarchy.get(current);
+            if (!nextParent) return false; 
+            if (nextParent === parentType) return true;
+            current = nextParent;
+            if (current === subtype) return false; 
+        }
+        return false;
+    }
+
+    unifyTypes(type1: TypeName, type2: TypeName): TypeName | null {
+        if(type1 === type2) return type1;
+        if(this.isSubtype(type1, type2)) return type1;
+        if(this.isSubtype(type2, type1)) return type2;
+        return null
+    }
+}
+
+const system = new TypeSystem();
+system.addType("word", "top");
+system.addType("noun", "word");
+system.addType("verb", "word");
+console.log(`Unify the types word and noun: ${system.unifyTypes("noun", "word")}`);
+console.log(`Unify the types verb and noun: ${system.unifyTypes("verb", "top")}`);
