@@ -3,11 +3,13 @@ type AtomicValue = string;
 
 class FeatureStructure {
 
+    private _type: TypeName = "top";
     private _isAtomic: boolean = false;
     private _atomicValue: AtomicValue | null = null;
     private _features: Map<Attribute, FeatureStructure> = new Map();
     
-    constructor(value?: AtomicValue) {
+    constructor(type: TypeName, value?: AtomicValue) {
+        this._type = type;
         if(value) {
             this._isAtomic = true;
             this._atomicValue = value;
@@ -16,6 +18,14 @@ class FeatureStructure {
 
     isAtomic(): boolean {
         return this._isAtomic;
+    }
+
+    getType(): TypeName {
+        return this._type;
+    }
+
+    setType(type: TypeName) {
+        this._type = type;
     }
 
     getValue(): AtomicValue {
@@ -62,16 +72,22 @@ class FeatureStructure {
             return this._atomicValue!;
         }
         const entries = Array.from(this._features.entries()).map(([attr, fs]) => `${attr}: ${fs.toString()}`);
-        return `[ ${entries.join(", ")} ]`;
+        return `${this._type}[ ${entries.join(", ")} ]`;
     }
 }
 
-export function unify(fs1: FeatureStructure, fs2: FeatureStructure): FeatureStructure | null {
+export function unify(fs1: FeatureStructure, fs2: FeatureStructure, typeSystem: TypeSystem): FeatureStructure | null {
+
+    const type1 = fs1.getType();
+    const type2 = fs2.getType();
+    const unifiedType = typeSystem.unifyTypes(type1, type2);
+    if(unifiedType === null) return null;
+
     if(fs1.isAtomic() && fs2.isAtomic()) {
         const value1 = fs1.getValue()!;
         const value2 = fs2.getValue()!;
         if(value1 === value2) {
-            return new FeatureStructure(value1);
+            return new FeatureStructure(unifiedType, value1);
         } else {
             return null;
         }
@@ -81,7 +97,7 @@ export function unify(fs1: FeatureStructure, fs2: FeatureStructure): FeatureStru
         return null;
     }
 
-    const result = new FeatureStructure();
+    const result = new FeatureStructure(unifiedType);
 
     const allAttributes = new Set<string>();
     for (const k of fs1.getAttributes()) allAttributes.add(k);
@@ -93,7 +109,7 @@ export function unify(fs1: FeatureStructure, fs2: FeatureStructure): FeatureStru
         if(value1 === undefined && value2 !== undefined) result.add(k, value2);
         if(value2 === undefined && value1 !== undefined) result.add(k, value1);
         if(value1 !== undefined && value2 !== undefined) {
-            const recursiveResult = unify(value1, value2);
+            const recursiveResult = unify(value1, value2, typeSystem);
             if(recursiveResult === null) return null;
             result.add(k, recursiveResult);
         }
@@ -137,9 +153,20 @@ class TypeSystem {
     }
 }
 
-const system = new TypeSystem();
-system.addType("word", "top");
-system.addType("noun", "word");
-system.addType("verb", "word");
-console.log(`Unify the types word and noun: ${system.unifyTypes("noun", "word")}`);
-console.log(`Unify the types verb and noun: ${system.unifyTypes("verb", "top")}`);
+const typeSystem = new TypeSystem();
+typeSystem.addType("word", "top");
+typeSystem.addType("noun", "word");
+typeSystem.addType("verb", "word");
+
+const word = new FeatureStructure("word");
+const noun = new FeatureStructure("noun");
+const verb = new FeatureStructure("verb");
+console.log(word.toString());
+console.log(noun.toString());
+console.log(verb.toString());
+
+const result = unify(word, noun, typeSystem);
+console.log(result?.toString());
+
+const result2 = unify(verb, noun, typeSystem);
+console.log(result2?.toString());
