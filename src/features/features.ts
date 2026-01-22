@@ -1,20 +1,13 @@
 type Attribute = string;
-type AtomicValue = string;
 
 class FeatureStructure {
 
     private _type: TypeName = "top";
-    private _isAtomic: boolean = false;
-    private _atomicValue: AtomicValue | null = null;
     private _features: Map<Attribute, FeatureStructure> = new Map();
     _forward: FeatureStructure | null = null;
 
-    constructor(type: TypeName, value?: AtomicValue) {
+    constructor(type: TypeName) {
         this._type = type;
-        if (value) {
-            this._isAtomic = true;
-            this._atomicValue = value;
-        }
     }
 
     dereference(): FeatureStructure {
@@ -22,12 +15,6 @@ class FeatureStructure {
         const result = this._forward.dereference();
         this._forward = result;
         return result;
-    }
-
-    isAtomic(): boolean {
-        const realNode = this.dereference();
-        if (realNode !== this) return realNode.isAtomic();
-        return this._isAtomic;
     }
 
     getType(): TypeName {
@@ -45,21 +32,9 @@ class FeatureStructure {
         this._type = type;
     }
 
-    getValue(): AtomicValue {
-        const realNode = this.dereference();
-        if (realNode !== this) return realNode.getValue();
-        if (!this._isAtomic) {
-            throw new Error("You cannot get an atomic value from a complex feature structure.");
-        }
-        return this._atomicValue!;
-    }
-
     get(attribute: Attribute): FeatureStructure | undefined {
         const realNode = this.dereference();
         if (realNode !== this) return realNode.get(attribute);
-        if (this._isAtomic) {
-            throw new Error("You cannot get an atomic value from a complex feature structure.");
-        }
         return this._features.get(attribute);
     }
 
@@ -68,10 +43,6 @@ class FeatureStructure {
         if (realNode !== this) {
             realNode.add(attribute, value, types);
             return;
-        }
-
-        if (this._isAtomic) {
-            throw new Error("You cannot set a feature in an atomic feature structure.");
         }
 
         const appropriateType = types.getAppropriateType(this._type, attribute);
@@ -88,9 +59,6 @@ class FeatureStructure {
     getAttributes(): IterableIterator<Attribute> {
         const realNode = this.dereference();
         if (realNode !== this) return realNode.getAttributes();
-        if (this._isAtomic) {
-            return [].values();
-        }
         return this._features.keys();
     }
 
@@ -100,7 +68,6 @@ class FeatureStructure {
         if (realNode !== this) return realNode.getIn(path);
 
         if (path.length === 0) return this;
-        if (this._isAtomic) return undefined;
 
         const head = path[0];
         const child = this._features.get(head);
@@ -112,9 +79,6 @@ class FeatureStructure {
     toString(): string {
         const realNode = this.dereference();
         if (realNode !== this) return realNode.toString();
-        if (this._isAtomic) {
-            return this._atomicValue!;
-        }
         const entries = Array.from(this._features.entries()).map(([attr, fs]) => `${attr}: ${fs.toString()}`);
         return `${this._type}[ ${entries.join(", ")} ]`;
     }
@@ -125,12 +89,10 @@ class FeatureStructure {
         if (memo.has(realSource)) {
             return memo.get(realSource)!;
         }
-        const copy = new FeatureStructure(realSource._type, realSource._atomicValue ?? undefined);
+        const copy = new FeatureStructure(realSource._type);
         memo.set(realSource, copy);
-        if (!realSource._isAtomic) {
-            for (const [attr, child] of realSource._features) {
-                copy.add(attr, child.deepCopy(memo, types), types);
-            }
+        for (const [attr, child] of realSource._features) {
+            copy.add(attr, child.deepCopy(memo, types), types);
         }
         return copy;
     }
@@ -145,16 +107,6 @@ export function unify(fs1: FeatureStructure, fs2: FeatureStructure, types: TypeS
 
     const newType = types.unifyTypes(n1.getType(), n2.getType());
     if (newType === null) throw new Error("Unification Failed");
-
-    if (n1.isAtomic() && n2.isAtomic()) {
-        if (n1.getValue() !== n2.getValue()) {
-            throw new Error(`Atomic Clash: ${n1.getValue()} vs ${n2.getValue()}`);
-        }
-    }
-
-    else if (n1.isAtomic() !== n2.isAtomic()) {
-        throw new Error("Structure Clash: Atom vs Complex");
-    }
 
     const featuresToMerge: Array<[Attribute, FeatureStructure]> = [];
     for (const key of n1.getAttributes()) {
