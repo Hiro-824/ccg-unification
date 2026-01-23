@@ -1,7 +1,7 @@
 export interface Grammar<T> {
     getAvailableWords(): string[];
     getTerminalCategories(word: string): T[];
-    combine(left: T, right: T): T[];
+    combine(left: T, right: T): { categories: T[], rule: string } | null;
 }
 
 export type Node<T> = {
@@ -9,6 +9,7 @@ export type Node<T> = {
     left?: Node<T>;
     right?: Node<T>;
     token?: string;
+    rule: string;
 }
 
 export function parse<T>(words: string[], grammar: Grammar<T>): Node<T>[] {
@@ -21,7 +22,7 @@ export function parse<T>(words: string[], grammar: Grammar<T>): Node<T>[] {
 
     for (let i = 0; i < length; i++) {
         const categories = grammar.getTerminalCategories(words[i]);
-        chart[0][i] = categories.map(cat => ({ mother: cat, token: words[i] }));
+        chart[0][i] = categories.map(cat => ({ mother: cat, token: words[i], rule: "terminal" }));
     }
 
     for (let spanLength = 2; spanLength <= length; spanLength++) {
@@ -42,13 +43,18 @@ export function parse<T>(words: string[], grammar: Grammar<T>): Node<T>[] {
                 for (const leftNode of leftNodes) {
 
                     for (const rightNode of rightNodes) {
-                        const mothers = grammar.combine(leftNode.mother, rightNode.mother);
-                        
+                        const result = grammar.combine(leftNode.mother, rightNode.mother);
+
+                        if(result === null) continue;
+
+                        const mothers = result.categories;
+
                         for (let k = 0; k < mothers.length; k++) {
                             cellNodes.push({
                                 mother: mothers[k],
                                 left: leftNode,
-                                right: rightNode
+                                right: rightNode,
+                                rule: result.rule
                             });
                         }
                     }
