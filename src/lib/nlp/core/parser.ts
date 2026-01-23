@@ -8,6 +8,7 @@ export type Node<T> = {
     mother: T;
     left?: Node<T>;
     right?: Node<T>;
+    token?: string;
 }
 
 export function parse<T>(words: string[], grammar: Grammar<T>): Node<T>[] {
@@ -20,7 +21,7 @@ export function parse<T>(words: string[], grammar: Grammar<T>): Node<T>[] {
 
     for (let i = 0; i < length; i++) {
         const categories = grammar.getTerminalCategories(words[i]);
-        chart[0][i] = categories.map(cat => ({ mother: cat }));
+        chart[0][i] = categories.map(cat => ({ mother: cat, token: words[i] }));
     }
 
     for (let spanLength = 2; spanLength <= length; spanLength++) {
