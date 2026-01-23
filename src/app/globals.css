@@ -3,6 +3,9 @@
 :root {
   --background: #ffffff;
   --foreground: #171717;
+  /* Fallback font variables for themes that referenced Geist. */
+  --font-geist-sans: "Inter", "Segoe UI", system-ui, -apple-system, sans-serif;
+  --font-geist-mono: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
 }
 
 @theme inline {
