@@ -1,4 +1,4 @@
-import { Grammar } from "../core/parser";
+import { Grammar } from "../../core/parser";
 
 export class CFG implements Grammar<string> {
 
