@@ -18,11 +18,22 @@ const defaultFormatMother = (mother: unknown): string => {
   }
 };
 
+function isTerminal<T>(node: ParseNode<T>): boolean {
+  return node.rule === "terminal";
+}
+
 function getChildren<T>(node: ParseNode<T>): ParseNode<T>[] {
   const children: ParseNode<T>[] = [];
   if (node.left) children.push(node.left);
   if (node.right) children.push(node.right);
   return children;
+}
+
+function getMergeRule<T>(node: ParseNode<T>): string | null {
+  if (isTerminal(node)) return null;
+  if (!node.left || !node.right) return null;
+  const trimmed = node.rule.trim();
+  return trimmed.length > 0 ? trimmed : null;
 }
 
 function TreeItem<T>({
@@ -33,6 +44,7 @@ function TreeItem<T>({
   formatMother: (mother: T) => string;
 }) {
   const children = getChildren(node);
+  const mergeRule = getMergeRule(node);
 
   return (
     <li>
@@ -47,16 +59,23 @@ function TreeItem<T>({
         )}
       </div>
       {children.length > 0 && (
-        <ul>
-          {children.map((child, idx) => (
-            <TreeItem
-              // Tree nodes are structural objects without stable ids; index is OK here.
-              key={idx}
-              node={child}
-              formatMother={formatMother}
-            />
-          ))}
-        </ul>
+        <div className="syntax-tree__children">
+          {mergeRule && (
+            <div className="syntax-tree__edge-label" aria-label={`Rule: ${mergeRule}`}>
+              {mergeRule}
+            </div>
+          )}
+          <ul>
+            {children.map((child, idx) => (
+              <TreeItem
+                // Tree nodes are structural objects without stable ids; index is OK here.
+                key={idx}
+                node={child}
+                formatMother={formatMother}
+              />
+            ))}
+          </ul>
+        </div>
       )}
     </li>
   );
@@ -72,4 +91,3 @@ export function SyntaxTree<T>({ root, formatMother }: Props<T>) {
     </ul>
   );
 }
-
