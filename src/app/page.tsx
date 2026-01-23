@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react";
 import { Grammar, parse, type Node as ParseNode } from "../lib/nlp/core/parser";
 import { CFG } from "../lib/nlp/grammars/cfg/cfg";
+import { SyntaxTree } from "./components/syntax-tree";
 
 type RegisteredGrammar = {
   id: string;
@@ -117,6 +118,22 @@ export default function Home() {
     }
   }, [parseResult]);
 
+  const parses = parseResult ?? [];
+  const hasParses = parses.length > 0;
+
+  const formatMotherForSummary = (mother: unknown): string => {
+    if (typeof mother === "string") return mother;
+    if (typeof mother === "number" || typeof mother === "boolean")
+      return String(mother);
+    if (mother === null) return "null";
+    if (mother === undefined) return "undefined";
+    try {
+      return JSON.stringify(mother);
+    } catch {
+      return String(mother);
+    }
+  };
+
   return (
     <main className="min-h-screen bg-white text-gray-900">
       <div className="mx-auto flex max-w-3xl flex-col gap-8 px-4 py-12 sm:px-6 lg:px-8">
@@ -202,6 +219,13 @@ export default function Home() {
               >
                 Parse
               </button>
+              <button
+                type="button"
+                onClick={() => setRawSentence("john sees mary")}
+                className="inline-flex justify-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-semibold text-gray-800 shadow-sm transition hover:bg-gray-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-500"
+              >
+                Use example
+              </button>
               <span className="text-xs text-gray-500">
                 Words are split on spaces after normalization.
               </span>
@@ -235,7 +259,41 @@ export default function Home() {
                 Parse result
               </span>
             </div>
-            <pre className="min-h-[160px] overflow-auto rounded-lg border border-gray-200 bg-gray-50 p-4 text-xs text-gray-800 shadow-inner">{formattedResult}</pre>
+            {hasParses ? (
+              <div className="space-y-6">
+                {parses.map((root, idx) => (
+                  <div
+                    key={idx}
+                    className="rounded-lg border border-gray-200 bg-white shadow-sm"
+                  >
+                    <div className="flex items-center justify-between border-b border-gray-100 px-4 py-2">
+                      <span className="text-xs font-semibold text-gray-800">
+                        Parse {idx + 1}
+                      </span>
+                      <span className="text-xs text-gray-500">
+                        Root: {formatMotherForSummary(root.mother)}
+                      </span>
+                    </div>
+                    <div className="overflow-auto p-4">
+                      <SyntaxTree root={root} />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="min-h-[120px] rounded-lg border border-gray-200 bg-gray-50 p-4 text-sm text-gray-600 shadow-inner">
+                {formattedResult}
+              </div>
+            )}
+
+            <details className="rounded-lg border border-gray-200 bg-gray-50">
+              <summary className="cursor-pointer select-none px-4 py-2 text-sm font-medium text-gray-800">
+                Raw JSON
+              </summary>
+              <pre className="max-h-[360px] overflow-auto border-t border-gray-200 p-4 text-xs text-gray-800">
+                {formattedResult}
+              </pre>
+            </details>
           </div>
         </section>
       </div>
