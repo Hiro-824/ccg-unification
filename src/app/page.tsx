@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { Grammar, parse, type Node as ParseNode } from "../lib/nlp/core/parser";
-import { CFG } from "../lib/nlp/grammars/cfg";
+import { CFG } from "../lib/nlp/grammars/cfg/cfg";
 
 type RegisteredGrammar = {
   id: string;
