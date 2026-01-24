@@ -55,7 +55,7 @@ export class FeatureStructure {
 
         const existing = this._features.get(attribute);
         if (existing) {
-            unify(existing, value, types);
+            FeatureStructure.unify(existing, value, types);
         } else {
             this._features.set(attribute, value);
         }
@@ -105,35 +105,34 @@ export class FeatureStructure {
         return copy;
     }
 
-}
-
-export function unify(fs1: FeatureStructure, fs2: FeatureStructure, types: TypeSystem): void {
-    const n1 = fs1.dereference();
-    const n2 = fs2.dereference();
-
-    if (n1 === n2) return;
-
-    const newType = types.unifyTypes(n1.getType(), n2.getType());
-    if (newType === null) throw new Error("Unification Failed");
-
-    const featuresToMerge: Array<[Attribute, FeatureStructure]> = [];
-    for (const key of n1.getAttributes()) {
-        featuresToMerge.push([key, n1.get(key)!]);
-    }
-
-    n2.setType(newType);
-    n1._forward = n2;
-
-    for (const [key, val1] of featuresToMerge) {
-        const val2 = n2.get(key);
-
-        if (val2) {
-            unify(val1, val2, types);
-        } else {
-            n2.add(key, val1, types);
+    static unify(fs1: FeatureStructure, fs2: FeatureStructure, types: TypeSystem): void {
+        const n1 = fs1.dereference();
+        const n2 = fs2.dereference();
+    
+        if (n1 === n2) return;
+    
+        const newType = types.unifyTypes(n1.getType(), n2.getType());
+        if (newType === null) throw new Error("Unification Failed");
+    
+        const featuresToMerge: Array<[Attribute, FeatureStructure]> = [];
+        for (const key of n1.getAttributes()) {
+            featuresToMerge.push([key, n1.get(key)!]);
+        }
+    
+        n2.setType(newType);
+        n1._forward = n2;
+    
+        for (const [key, val1] of featuresToMerge) {
+            const val2 = n2.get(key);
+    
+            if (val2) {
+                FeatureStructure.unify(val1, val2, types);
+            } else {
+                n2.add(key, val1, types);
+            }
         }
     }
-}
+} 
 
 type TypeName = string;
 
