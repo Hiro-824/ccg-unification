@@ -1,6 +1,6 @@
 type Attribute = string;
 
-class FeatureStructure {
+export class FeatureStructure {
 
     private _type: TypeName = "top";
     private _features: Map<Attribute, FeatureStructure> = new Map();
