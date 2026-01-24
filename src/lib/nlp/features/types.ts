@@ -65,4 +65,29 @@ export class TypeSystem {
         if (this.isSubtype(type2, type1)) return type2;
         return null
     }
+
+    loadDefinition(json: Record<string, { parent: TypeName, features?: Record<Attribute, TypeName> }>): void {
+        const typeNames = Object.keys(json);
+
+        // Pass 1: まず全ての型を階層に登録する
+        // (親型が未登録だとエラーになる可能性があるため、理想的にはトポロジカルソートが必要だが
+        //  ここでは単純に2パス処理とし、addTypeの実装が順序に依存しないことを前提とするか、
+        //  ユーザーが親から順に定義することを期待する)
+        // ※前回のaddType実装はMapへのsetだけなので順序不同でもエラーにはなりませんが、
+        //   isSubtype等を呼ぶ前には全登録が必要です。
+        for (const typeName of typeNames) {
+            if (typeName === "top") continue;
+            const def = json[typeName];
+            this.addType(typeName, def.parent);
+        }
+
+        for (const typeName of typeNames) {
+            const def = json[typeName];
+            if (def.features) {
+                for (const [attr, rangeType] of Object.entries(def.features)) {
+                    this.addFeature(typeName, attr, rangeType);
+                }
+            }
+        }
+    }
 }
