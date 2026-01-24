@@ -59,7 +59,13 @@ function TreeItem<T>({
         )}
       </div>
       {children.length > 0 && (
-        <div className="syntax-tree__children">
+        <div
+          className={
+            mergeRule
+              ? "syntax-tree__children syntax-tree__children--merge"
+              : "syntax-tree__children"
+          }
+        >
           {mergeRule && (
             <div className="syntax-tree__edge-label" aria-label={`Rule: ${mergeRule}`}>
               {mergeRule}

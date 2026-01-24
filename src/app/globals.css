@@ -38,24 +38,60 @@ body {
   position: relative;
 }
 
+.syntax-tree {
+  --syntax-tree-edge-height: 34px;
+}
+
 .syntax-tree ul {
-  padding-top: 18px;
+  padding-top: var(--syntax-tree-edge-height);
 }
 
 .syntax-tree__children {
   position: relative;
 }
 
+.syntax-tree__children::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 50%;
+  height: var(--syntax-tree-edge-height);
+  border-left: 1px solid rgb(203 213 225); /* slate-300 */
+}
+
+.syntax-tree__children--merge {
+  --syntax-tree-edge-label-gap: 18px;
+}
+
+.syntax-tree__children--merge::before {
+  height: calc(
+    (var(--syntax-tree-edge-height) - var(--syntax-tree-edge-label-gap)) / 2
+  );
+}
+
+.syntax-tree__children--merge::after {
+  content: "";
+  position: absolute;
+  top: calc((var(--syntax-tree-edge-height) + var(--syntax-tree-edge-label-gap)) / 2);
+  left: 50%;
+  height: calc(
+    (var(--syntax-tree-edge-height) - var(--syntax-tree-edge-label-gap)) / 2
+  );
+  border-left: 1px solid rgb(203 213 225); /* slate-300 */
+}
+
 .syntax-tree__edge-label {
   position: absolute;
-  top: 9px;
+  top: calc(var(--syntax-tree-edge-height) / 2);
   left: 50%;
   transform: translate(-50%, -50%);
+  z-index: 2;
   max-width: 220px;
   padding: 2px 6px;
   border: 1px solid rgb(226 232 240); /* slate-200 */
   border-radius: 9999px;
   background: rgb(255 255 255);
+  box-shadow: 0 0 0 2px rgb(255 255 255);
   font-family: var(--font-geist-mono);
   font-size: 10px;
   line-height: 1.2;
@@ -68,7 +104,7 @@ body {
 .syntax-tree li {
   list-style: none;
   position: relative;
-  padding: 18px 10px 0 10px;
+  padding: var(--syntax-tree-edge-height) 10px 0 10px;
   text-align: center;
 }
 
@@ -78,7 +114,7 @@ body {
   position: absolute;
   top: 0;
   width: 50%;
-  height: 18px;
+  height: var(--syntax-tree-edge-height);
   border-top: 1px solid rgb(203 213 225); /* slate-300 */
 }
 
@@ -115,12 +151,7 @@ body {
 }
 
 .syntax-tree ul::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 50%;
-  height: 18px;
-  border-left: 1px solid rgb(203 213 225);
+  content: none;
 }
 
 .syntax-tree__label {
