@@ -2,6 +2,13 @@ import { TypeName, TypeSystem } from "./types";
 
 export type Attribute = string;
 
+export type FeatureStructureInput = string | FeatureStructureAVM;
+export interface FeatureStructureAVM {
+    type: string;
+    _id?: number;
+    [key: string]: unknown;
+}
+
 export class FeatureStructure {
 
     private _type: TypeName = "top";
@@ -110,28 +117,84 @@ export class FeatureStructure {
     static unify(fs1: FeatureStructure, fs2: FeatureStructure, types: TypeSystem): void {
         const n1 = fs1.dereference();
         const n2 = fs2.dereference();
-    
+
         if (n1 === n2) return;
-    
+
         const newType = types.unifyTypes(n1.getType(), n2.getType());
         if (newType === null) throw new Error("Unification Failed");
-    
+
         const featuresToMerge: Array<[Attribute, FeatureStructure]> = [];
         for (const key of n1.getAttributes()) {
             featuresToMerge.push([key, n1.get(key)!]);
         }
-    
+
         n2.setType(newType);
         n1._forward = n2;
-    
+
         for (const [key, val1] of featuresToMerge) {
             const val2 = n2.get(key);
-    
+
             if (val2) {
                 FeatureStructure.unify(val1, val2, types);
             } else {
                 n2.add(key, val1, types);
             }
         }
+    }
+
+    static fromJSON(
+        json: unknown,
+        types: TypeSystem,
+        context: Map<string, FeatureStructure> = new Map()
+    ): FeatureStructure {
+
+        // ケース1: 文字列の場合
+        if (typeof json === "string") {
+            if (json.startsWith("#")) {
+                const id = json.substring(1);
+                const ref = context.get(id);
+                if (!ref) {
+                    throw new Error(`Unresolved reference: ${json}. Ensure definition (_id) comes before reference.`);
+                }
+                return ref;
+            }
+            return new FeatureStructure(json);
+        }
+
+        // ケース2: オブジェクトの場合
+        // ヘルパー関数で型を絞り込む
+        if (this.isAVM(json)) {
+            const type = json.type;
+            const fs = new FeatureStructure(type);
+
+            // _id の処理 (数値の場合も文字列化して扱う)
+            if (json._id !== undefined && json._id !== null) {
+                context.set(json._id.toString(), fs);
+            }
+
+            // 各素性の処理
+            for (const key of Object.keys(json)) {
+                if (key === "type" || key === "_id") continue;
+
+                const valueJSON = json[key];
+                // 再帰呼び出し: valueJSON は unknown だが、fromJSON は unknown を受け取るのでOK
+                const childFS = FeatureStructure.fromJSON(valueJSON, types, context);
+
+                fs.add(key, childFS, types);
+            }
+
+            return fs;
+        }
+
+        // 文字列でも有効なオブジェクトでもない場合
+        throw new Error(`Invalid JSON format for Feature Structure: ${JSON.stringify(json)}`);
+    }
+
+    private static isAVM(value: unknown): value is FeatureStructureAVM {
+        if (typeof value !== "object" || value === null) {
+            return false;
+        }
+        const record = value as Record<string, unknown>;
+        return typeof record.type === "string";
     }
 } 
