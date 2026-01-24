@@ -49,11 +49,16 @@ export class FeatureStructure {
         if (appropriateType === null) {
             throw new Error(`The feature ${attribute} does not exist on ${this._type}.`);
         }
-        if(types.unifyTypes(appropriateType, value.getType()) === null) {
+        if (types.unifyTypes(appropriateType, value.getType()) === null) {
             throw new Error(`The value type ${value.getType()} is not compatible with ${appropriateType}.`);
         }
 
-        this._features.set(attribute, value);
+        const existing = this._features.get(attribute);
+        if (existing) {
+            unify(existing, value, types);
+        } else {
+            this._features.set(attribute, value);
+        }
     }
 
     getAttributes(): IterableIterator<Attribute> {
@@ -76,10 +81,13 @@ export class FeatureStructure {
         return child.getIn(path.slice(1));
     }
 
-    toString(): string {
+    toString(visited: Map<FeatureStructure, number> = new Map()): string {
         const realNode = this.dereference();
-        if (realNode !== this) return realNode.toString();
-        const entries = Array.from(this._features.entries()).map(([attr, fs]) => `${attr}: ${fs.toString()}`);
+        if (realNode !== this) return realNode.toString(visited);
+        if (visited.has(realNode)) return `<${visited.get(realNode)}>`;
+        visited.set(realNode, visited.size + 1);
+        const entries = Array.from(this._features.entries())
+            .map(([attr, fs]) => `${attr}: ${fs.toString(visited)}`);
         return `${this._type}[ ${entries.join(", ")} ]`;
     }
 
@@ -171,13 +179,17 @@ export class TypeSystem {
     isSubtype(subtype: TypeName, parentType: TypeName): boolean {
         if (subtype === parentType) return true;
         if (parentType === "top") return true;
-        let current = subtype;
-        while (current !== "top") {
+        let current: TypeName | undefined = subtype;
+        const visited: Set<TypeName> = new Set();
+
+        while (current && current !== "top") {
+            if (visited.has(current)) return false;
+            visited.add(current);
+
             const nextParent = this._typeHierarchy.get(current);
-            if (!nextParent) return false;
             if (nextParent === parentType) return true;
+
             current = nextParent;
-            if (current === subtype) return false;
         }
         return false;
     }
