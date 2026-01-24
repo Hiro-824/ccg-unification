@@ -129,7 +129,7 @@ export function unify(fs1: FeatureStructure, fs2: FeatureStructure, types: TypeS
 
 type TypeName = string;
 
-class TypeSystem {
+export class TypeSystem {
     private _typeHierarchy: Map<TypeName, TypeName> = new Map();
     private _appropriateness: Map<TypeName, Map<Attribute, TypeName>> = new Map();
     // TypeName(1)という型のFeatureStructureインスタンスは、
