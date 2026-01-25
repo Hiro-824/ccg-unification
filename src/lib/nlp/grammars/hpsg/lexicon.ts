@@ -3,7 +3,7 @@ import { FeatureStructureInput } from "../../features/features";
 export type LexiconDefinition = Record<string, FeatureStructureInput[]>;
 
 export const lexiconData: LexiconDefinition = {
-    "Kim": [
+    "kim": [
         {
             "type": "word",
             "SYN": {
