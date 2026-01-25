@@ -9,7 +9,7 @@ export const lexiconData: LexiconDefinition = {
             "SYN": {
                 "type": "syn-cat",
                 "HEAD": { "type": "noun", "AGR": "3sing" },
-                "VAL": { "type": "val-cat", "SPR": "exp-list-empty", "COMPS": "exp-list-empty" }
+                "VAL": { "type": "val-cat", "SPR": "exp-list-empty", "COMPS": "exp-list-empty", "MOD": "exp-list-empty" }
             },
             "SEM": { "type": "sem-cat" }
         }
@@ -20,7 +20,7 @@ export const lexiconData: LexiconDefinition = {
             "SYN": {
                 "type": "syn-cat",
                 "HEAD": { "type": "noun", "AGR": "3sing" },
-                "VAL": { "type": "val-cat", "SPR": "exp-list-empty", "COMPS": "exp-list-empty" }
+                "VAL": { "type": "val-cat", "SPR": "exp-list-empty", "COMPS": "exp-list-empty", "MOD": "exp-list-empty" }
             },
             "SEM": { "type": "sem-cat" }
         }
@@ -31,7 +31,7 @@ export const lexiconData: LexiconDefinition = {
             "SYN": {
                 "type": "syn-cat",
                 "HEAD": { "type": "noun", "AGR": "3sing" },
-                "VAL": { "type": "val-cat", "SPR": "exp-list-empty", "COMPS": "exp-list-empty" }
+                "VAL": { "type": "val-cat", "SPR": "exp-list-empty", "COMPS": "exp-list-empty", "MOD": "exp-list-empty" }
             },
             "SEM": { "type": "sem-cat" }
         }
@@ -63,7 +63,8 @@ export const lexiconData: LexiconDefinition = {
                         },
                         "REST": "exp-list-empty"
                     },
-                    "COMPS": "exp-list-empty"
+                    "COMPS": "exp-list-empty",
+                    "MOD": "exp-list-empty"
                 }
             },
             "SEM": { "type": "sem-cat" }
@@ -75,7 +76,7 @@ export const lexiconData: LexiconDefinition = {
             "SYN": {
                 "type": "syn-cat",
                 "HEAD": { "type": "det", "AGR": "3sing", "COUNT": "+" },
-                "VAL": { "type": "val-cat", "SPR": "exp-list-empty", "COMPS": "exp-list-empty" }
+                "VAL": { "type": "val-cat", "SPR": "exp-list-empty", "COMPS": "exp-list-empty", "MOD": "exp-list-empty" }
             },
             "SEM": { "type": "sem-cat" }
         }
@@ -99,7 +100,8 @@ export const lexiconData: LexiconDefinition = {
                         },
                         "REST": "exp-list-empty"
                     },
-                    "COMPS": "exp-list-empty"
+                    "COMPS": "exp-list-empty",
+                    "MOD": "exp-list-empty"
                 }
             },
             "SEM": { "type": "sem-cat" }
@@ -134,7 +136,8 @@ export const lexiconData: LexiconDefinition = {
                             }
                         },
                         "REST": "exp-list-empty"
-                    }
+                    },
+                    "MOD": "exp-list-empty"
                 }
             },
             "SEM": { "type": "sem-cat" }
@@ -154,7 +157,7 @@ export const lexiconData: LexiconDefinition = {
                     "COMPS": {
                         "type": "exp-list-cons",
                         "FIRST": {
-                            "type": "word",
+                            "type": "expression",
                             "SYN": {
                                 "type": "syn-cat",
                                 "HEAD": { "type": "noun", "CASE": "acc" }
@@ -165,7 +168,7 @@ export const lexiconData: LexiconDefinition = {
                     "MOD": {
                         "type": "exp-list-cons",
                         "FIRST": {
-                            "type": "word",
+                            "type": "expression",
                             "SYN": {
                                 "type": "syn-cat",
                                 "HEAD": { "type": "noun" }

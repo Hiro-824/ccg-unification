@@ -163,6 +163,9 @@ export const ruleData: RuleDefinition = {
                 "type": "syn-cat",
                 "VAL": {
                     "type": "val-cat",
+                    "SPR": {
+                        "type": "exp-list-empty"
+                    },
                     "COMPS": {
                         "type": "exp-list-empty"
                     },
