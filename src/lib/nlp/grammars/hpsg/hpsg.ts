@@ -1,12 +1,14 @@
 import { Grammar } from "../../core/parser";
-import { FeatureStructure } from "../../features/features";
+import { FeatureStructure, FeatureStructureInput } from "../../features/features";
 import { TypeSystem } from "../../features/types";
-import { LexiconDefinition } from "./lexicon";
+import { lexiconData, LexiconDefinition } from "./lexicon";
+import { ruleData } from "./rules";
 
 export class HPSG implements Grammar<FeatureStructure> {
 
     types: TypeSystem = new TypeSystem();
     private _lexicon: Map<string, FeatureStructure[]> = new Map();
+    private _rules: Map<string, FeatureStructure> = new Map();
 
     typeDefinition = {
         "exp-list": { parent: "top" },
@@ -60,6 +62,8 @@ export class HPSG implements Grammar<FeatureStructure> {
         "verb": { parent: "agr-pos", features: { "AUX": "bool" } },
         "noun": { parent: "agr-pos", features: { "CASE": "case" } },
         "det": { parent: "agr-pos", features: { "COUNT": "bool" } },
+
+        "rule-schema": { parent: "top", features: { "MOTHER": "expression", "HEAD-DTR": "expression", "NON-HEAD-DTR": "expression" } },
     };
 
     loadLexicon(definition: LexiconDefinition): void {
@@ -84,8 +88,21 @@ export class HPSG implements Grammar<FeatureStructure> {
         }
     }
 
+    loadRules(schemas: Record<string, FeatureStructureInput>) {
+        for (const [name, schema] of Object.entries(schemas)) {
+            try {
+                const fs = FeatureStructure.fromJSON(schema, this.types);
+                this._rules.set(name, fs);
+            } catch (e) {
+                console.error(`Failed to load rule ${name}:`, e);
+            }
+        }
+    }
+
     constructor() {
         this.types.loadDefinition(this.typeDefinition);
+        this.loadLexicon(lexiconData);
+        this.loadRules(ruleData);
     }
 
     getAvailableWords(): string[] {
@@ -100,6 +117,54 @@ export class HPSG implements Grammar<FeatureStructure> {
     }
 
     combine(left: FeatureStructure, right: FeatureStructure): { categories: FeatureStructure[]; rule: string; } | null {
-        throw new Error("Method not implemented.");
+        const results: FeatureStructure[] = [];
+
+        for (const [ruleName, ruleSchema] of this._rules.entries()) {
+            const context = new Map<FeatureStructure, FeatureStructure>();
+            
+            const schema = ruleSchema.deepCopy(context, this.types);
+            const leftCopy = left.deepCopy(context, this.types);
+            const rightCopy = right.deepCopy(context, this.types);
+
+            let targetHead: FeatureStructure; 
+            let targetNonHead: FeatureStructure;
+            let targetMother: FeatureStructure;
+
+            let candidateHead: FeatureStructure;
+            let candidateNonHead: FeatureStructure;
+
+            try {
+                targetHead = schema.get("HEAD-DTR")!;
+                targetNonHead = schema.get("NON-HEAD-DTR")!;
+                targetMother = schema.get("MOTHER")!;
+            } catch (e) {
+                console.error(`Invalid rule schema: ${ruleName}, ${e}`);
+                continue;
+            }
+
+            if (ruleName === "head-complement") {
+                candidateHead = leftCopy;
+                candidateNonHead = rightCopy;
+            } else if (ruleName === "head-specifier") {
+                candidateHead = rightCopy;
+                candidateNonHead = leftCopy;
+            } else if (ruleName === "head-modifier") {
+                 candidateHead = leftCopy;
+                 candidateNonHead = rightCopy;
+            } else {
+                continue; // 未対応のルール
+            }
+
+            try {
+                FeatureStructure.unify(targetHead, candidateHead, this.types);
+                FeatureStructure.unify(targetNonHead, candidateNonHead, this.types);
+                console.log(`Rule applied: ${ruleName}`);
+                results.push(targetMother);
+            } catch (e) {
+                console.error(`Rule not applied: ${ruleName}, ${e}`);
+            }
+        }
+
+        return { categories: results, rule: "One of the rules" };
     }
 }

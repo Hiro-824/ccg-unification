@@ -25,7 +25,7 @@ export const lexiconData: LexiconDefinition = {
                     "SPR": {
                         "type": "exp-list-cons",
                         "FIRST": {
-                            "type": "phrase",
+                            "type": "word",
                             "SYN": {
                                 "type": "syn-cat",
                                 "HEAD": { "type": "noun", "CASE": "nom", "AGR": "3sing" }

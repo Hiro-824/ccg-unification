@@ -5,7 +5,7 @@ export type Attribute = string;
 export type FeatureStructureInput = string | FeatureStructureAVM;
 export interface FeatureStructureAVM {
     type: string;
-    _id?: number;
+    _id?: string;
     [key: string]: unknown;
 }
 

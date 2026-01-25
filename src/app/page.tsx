@@ -4,6 +4,7 @@ import { useMemo, useState } from "react";
 import { Grammar, parse, type Node as ParseNode } from "../lib/nlp/core/parser";
 import { CFG } from "../lib/nlp/grammars/cfg/cfg";
 import { SyntaxTree } from "./components/syntax-tree";
+import { HPSG } from "../lib/nlp/grammars/hpsg/hpsg";
 
 type RegisteredGrammar = {
   id: string;
@@ -17,6 +18,11 @@ const GRAMMARS: RegisteredGrammar[] = [
     label: "Context-Free Grammar (demo)",
     build: () => new CFG(),
   },
+  {
+    id: "hpsg",
+    label: "HPSG",
+    build: () => new HPSG(),
+  }
 ];
 
 const normalizeSentence = (input: string): string =>
