@@ -8,7 +8,29 @@ export const lexiconData: LexiconDefinition = {
             "type": "word",
             "SYN": {
                 "type": "syn-cat",
-                "HEAD": { "type": "noun", "CASE": "nom", "AGR": "3sing" },
+                "HEAD": { "type": "noun", "AGR": "3sing" },
+                "VAL": { "type": "val-cat", "SPR": "exp-list-empty", "COMPS": "exp-list-empty" }
+            },
+            "SEM": { "type": "sem-cat" }
+        }
+    ],
+    "john": [
+        {
+            "type": "word",
+            "SYN": {
+                "type": "syn-cat",
+                "HEAD": { "type": "noun", "AGR": "3sing" },
+                "VAL": { "type": "val-cat", "SPR": "exp-list-empty", "COMPS": "exp-list-empty" }
+            },
+            "SEM": { "type": "sem-cat" }
+        }
+    ],
+    "mary": [
+        {
+            "type": "word",
+            "SYN": {
+                "type": "syn-cat",
+                "HEAD": { "type": "noun", "AGR": "3sing" },
                 "VAL": { "type": "val-cat", "SPR": "exp-list-empty", "COMPS": "exp-list-empty" }
             },
             "SEM": { "type": "sem-cat" }
@@ -34,6 +56,41 @@ export const lexiconData: LexiconDefinition = {
                         "REST": "exp-list-empty"
                     },
                     "COMPS": "exp-list-empty"
+                }
+            },
+            "SEM": { "type": "sem-cat" }
+        }
+    ],
+    "sees": [
+        {
+            "type": "word",
+            "SYN": {
+                "type": "syn-cat",
+                "HEAD": { "type": "verb", "AUX": "-" },
+                "VAL": {
+                    "type": "val-cat",
+                    "SPR": {
+                        "type": "exp-list-cons",
+                        "FIRST": {
+                            "type": "word",
+                            "SYN": {
+                                "type": "syn-cat",
+                                "HEAD": { "type": "noun", "CASE": "nom", "AGR": "3sing" }
+                            }
+                        },
+                        "REST": "exp-list-empty"
+                    },
+                    "COMPS": {
+                        "type": "exp-list-cons",
+                        "FIRST": {
+                            "type": "word",
+                            "SYN": {
+                                "type": "syn-cat",
+                                "HEAD": { "type": "noun", "CASE": "acc" }
+                            }
+                        },
+                        "REST": "exp-list-empty"
+                    }
                 }
             },
             "SEM": { "type": "sem-cat" }
