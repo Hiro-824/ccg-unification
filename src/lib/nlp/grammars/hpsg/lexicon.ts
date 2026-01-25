@@ -96,4 +96,78 @@ export const lexiconData: LexiconDefinition = {
             "SEM": { "type": "sem-cat" }
         }
     ],
+    "with": [
+        {
+            "type": "word",
+            "SYN": {
+                "type": "syn-cat",
+                "HEAD": { "type": "prep" },
+                "VAL": {
+                    "type": "val-cat",
+                    "SPR": {
+                        "type": "exp-list-empty",
+                    },
+                    "COMPS": {
+                        "type": "exp-list-cons",
+                        "FIRST": {
+                            "type": "word",
+                            "SYN": {
+                                "type": "syn-cat",
+                                "HEAD": { "type": "noun", "CASE": "acc" }
+                            }
+                        },
+                        "REST": "exp-list-empty"
+                    },
+                    "MOD": {
+                        "type": "exp-list-cons",
+                        "FIRST": {
+                            "type": "word",
+                            "SYN": {
+                                "type": "syn-cat",
+                                "HEAD": { "type": "noun" }
+                            }
+                        },
+                        "REST": "exp-list-empty"
+                    }
+                }
+            },
+            "SEM": { "type": "sem-cat" }
+        },
+        {
+            "type": "word",
+            "SYN": {
+                "type": "syn-cat",
+                "HEAD": { "type": "prep" },
+                "VAL": {
+                    "type": "val-cat",
+                    "SPR": {
+                        "type": "exp-list-empty",
+                    },
+                    "COMPS": {
+                        "type": "exp-list-cons",
+                        "FIRST": {
+                            "type": "word",
+                            "SYN": {
+                                "type": "syn-cat",
+                                "HEAD": { "type": "noun", "CASE": "acc" }
+                            }
+                        },
+                        "REST": "exp-list-empty"
+                    },
+                    "MOD": {
+                        "type": "exp-list-cons",
+                        "FIRST": {
+                            "type": "word",
+                            "SYN": {
+                                "type": "syn-cat",
+                                "HEAD": { "type": "verb" }
+                            }
+                        },
+                        "REST": "exp-list-empty"
+                    }
+                }
+            },
+            "SEM": { "type": "sem-cat" }
+        }
+    ],
 };
