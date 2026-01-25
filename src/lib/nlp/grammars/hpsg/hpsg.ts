@@ -116,8 +116,8 @@ export class HPSG implements Grammar<FeatureStructure> {
         return masters.map(fs => fs.deepCopy(new Map(), this.types));
     }
 
-    combine(left: FeatureStructure, right: FeatureStructure): { categories: FeatureStructure[]; rule: string; } | null {
-        const results: FeatureStructure[] = [];
+    combine(left: FeatureStructure, right: FeatureStructure): { category: FeatureStructure; rule: string }[] {
+        const results: { category: FeatureStructure; rule: string }[] = [];
 
         for (const [ruleName, ruleSchema] of this._rules.entries()) {
             const context = new Map<FeatureStructure, FeatureStructure>();
@@ -159,12 +159,12 @@ export class HPSG implements Grammar<FeatureStructure> {
                 FeatureStructure.unify(targetHead, candidateHead, this.types);
                 FeatureStructure.unify(targetNonHead, candidateNonHead, this.types);
                 console.log(`Rule applied: ${ruleName}`);
-                results.push(targetMother);
+                results.push({ category: targetMother, rule: ruleName });
             } catch (e) {
                 console.log(`Rule not applied: ${ruleName}, ${e}`);
             }
         }
 
-        return { categories: results, rule: "One of the rules" };
+        return results;
     }
 }

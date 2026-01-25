@@ -1,7 +1,7 @@
 export interface Grammar<T> {
     getAvailableWords(): string[];
     getTerminalCategories(word: string): T[];
-    combine(left: T, right: T): { categories: T[], rule: string } | null;
+    combine(left: T, right: T): { category: T; rule: string }[];
 }
 
 export type Node<T> = {
@@ -43,18 +43,16 @@ export function parse<T>(words: string[], grammar: Grammar<T>): Node<T>[] {
                 for (const leftNode of leftNodes) {
 
                     for (const rightNode of rightNodes) {
-                        const result = grammar.combine(leftNode.mother, rightNode.mother);
+                        const results = grammar.combine(leftNode.mother, rightNode.mother);
 
-                        if(result === null) continue;
+                        if (results.length === 0) continue;
 
-                        const mothers = result.categories;
-
-                        for (let k = 0; k < mothers.length; k++) {
+                        for (const result of results) {
                             cellNodes.push({
-                                mother: mothers[k],
+                                mother: result.category,
                                 left: leftNode,
                                 right: rightNode,
-                                rule: result.rule
+                                rule: result.rule,
                             });
                         }
                     }

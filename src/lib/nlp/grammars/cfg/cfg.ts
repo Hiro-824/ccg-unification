@@ -23,13 +23,13 @@ export class CFG implements Grammar<string> {
         return category ? [category] : [];
     }
 
-    combine(left: string, right: string): { categories: string[], rule: string } | null {
-        if (left === "NP" && right === "VP") return { categories: ["S"], rule: "S → NP VP"};
-        if (left === "V" && right === "NP") return { categories: ["VP"], rule: "VP → V NP"};
-        if (left === "Det" && right === "N") return { categories: ["NP"], rule: "NP → Det N"};
-        if (left === "P" && right === "NP") return { categories: ["PP"], rule: "PP → P NP"};
-        if (left === "VP" && right === "PP") return { categories: ["VP"], rule: "VP → VP PP"};
-        if (left === "N" && right === "PP") return { categories: ["N"], rule: "N → N PP"};
-        return null
+    combine(left: string, right: string): { category: string; rule: string }[] {
+        if (left === "NP" && right === "VP") return [{ category: "S", rule: "S → NP VP" }];
+        if (left === "V" && right === "NP") return [{ category: "VP", rule: "VP → V NP" }];
+        if (left === "Det" && right === "N") return [{ category: "NP", rule: "NP → Det N" }];
+        if (left === "P" && right === "NP") return [{ category: "PP", rule: "PP → P NP" }];
+        if (left === "VP" && right === "PP") return [{ category: "VP", rule: "VP → VP PP" }];
+        if (left === "N" && right === "PP") return [{ category: "N", rule: "N → N PP" }];
+        return [];
     }
 }
