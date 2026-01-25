@@ -36,6 +36,50 @@ export const lexiconData: LexiconDefinition = {
             "SEM": { "type": "sem-cat" }
         }
     ],
+    "telescope": [
+        {
+            "type": "word",
+            "SYN": {
+                "type": "syn-cat",
+                "HEAD": {
+                    "type": "noun", "AGR": {
+                        "type": "3sing",
+                        "_id": "1"
+                    }
+                },
+                "VAL": {
+                    "type": "val-cat",
+                    "SPR": {
+                        "type": "exp-list-cons",
+                        "FIRST": {
+                            "type": "expression",
+                            "SYN": {
+                                "type": "syn-cat",
+                                "HEAD": {
+                                    "type": "det",
+                                    "AGR": "#1",
+                                }
+                            }
+                        },
+                        "REST": "exp-list-empty"
+                    },
+                    "COMPS": "exp-list-empty"
+                }
+            },
+            "SEM": { "type": "sem-cat" }
+        }
+    ],
+    "a": [
+        {
+            "type": "word",
+            "SYN": {
+                "type": "syn-cat",
+                "HEAD": { "type": "det", "AGR": "3sing", "COUNT": "+" },
+                "VAL": { "type": "val-cat", "SPR": "exp-list-empty", "COMPS": "exp-list-empty" }
+            },
+            "SEM": { "type": "sem-cat" }
+        }
+    ],
     "walks": [
         {
             "type": "word",
