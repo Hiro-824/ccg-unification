@@ -1,10 +1,12 @@
 import { Grammar } from "../../core/parser";
 import { FeatureStructure } from "../../features/features";
 import { TypeSystem } from "../../features/types";
+import { LexiconDefinition } from "./lexicon";
 
 export class HPSG implements Grammar<FeatureStructure> {
 
     types: TypeSystem = new TypeSystem();
+    private _lexicon: Map<string, FeatureStructure[]> = new Map();
 
     typeDefinition = {
         "exp-list": { parent: "top" },
@@ -60,16 +62,41 @@ export class HPSG implements Grammar<FeatureStructure> {
         "det": { parent: "agr-pos", features: { "COUNT": "bool" } },
     };
 
+    loadLexicon(definition: LexiconDefinition): void {
+        for (const [word, fsDefs] of Object.entries(definition)) {
+            const fsList: FeatureStructure[] = [];
+
+            for (const fsDef of fsDefs) {
+                try {
+                    const fs = FeatureStructure.fromJSON(fsDef, this.types);
+                    fsList.push(fs);
+                } catch (e) {
+                    console.error(`Error loading lexical entry for word "${word}":`, e);
+                }
+            }
+
+            const existing = this._lexicon.get(word);
+            if (existing) {
+                existing.push(...fsList);
+            } else {
+                this._lexicon.set(word, fsList);
+            }
+        }
+    }
+
     constructor() {
         this.types.loadDefinition(this.typeDefinition);
     }
 
     getAvailableWords(): string[] {
-        throw new Error("Method not implemented.");
+        return Array.from(this._lexicon.keys());
     }
 
     getTerminalCategories(word: string): FeatureStructure[] {
-        throw new Error("Method not implemented.");
+        const masters = this._lexicon.get(word);
+        if (!masters) return [];
+
+        return masters.map(fs => fs.deepCopy(new Map(), this.types));
     }
 
     combine(left: FeatureStructure, right: FeatureStructure): { categories: FeatureStructure[]; rule: string; } | null {
