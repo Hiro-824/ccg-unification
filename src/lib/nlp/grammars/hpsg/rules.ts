@@ -34,11 +34,11 @@ export const ruleData: RuleDefinition = {
             }
         },
         "NON-HEAD-DTR": {
-            "type": "word",
+            "type": "expression",
             "_id": "1",
         },
         "HEAD-DTR": {
-            "type": "word",
+            "type": "expression",
             "SYN": {
                 "type": "syn-cat",
                 "HEAD": "#5",
