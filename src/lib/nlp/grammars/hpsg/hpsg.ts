@@ -161,7 +161,7 @@ export class HPSG implements Grammar<FeatureStructure> {
                 console.log(`Rule applied: ${ruleName}`);
                 results.push(targetMother);
             } catch (e) {
-                console.error(`Rule not applied: ${ruleName}, ${e}`);
+                console.log(`Rule not applied: ${ruleName}, ${e}`);
             }
         }
 
