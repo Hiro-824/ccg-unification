@@ -36,6 +36,40 @@ export const lexiconData: LexiconDefinition = {
             "SEM": { "type": "sem-cat" }
         }
     ],
+    "girl": [
+        {
+            "type": "word",
+            "SYN": {
+                "type": "syn-cat",
+                "HEAD": {
+                    "type": "noun", "AGR": {
+                        "type": "3sing",
+                        "_id": "1"
+                    }
+                },
+                "VAL": {
+                    "type": "val-cat",
+                    "SPR": {
+                        "type": "exp-list-cons",
+                        "FIRST": {
+                            "type": "expression",
+                            "SYN": {
+                                "type": "syn-cat",
+                                "HEAD": {
+                                    "type": "det",
+                                    "AGR": "#1",
+                                }
+                            }
+                        },
+                        "REST": "exp-list-empty"
+                    },
+                    "COMPS": "exp-list-empty",
+                    "MOD": "exp-list-empty"
+                }
+            },
+            "SEM": { "type": "sem-cat" }
+        }
+    ],
     "telescope": [
         {
             "type": "word",
@@ -92,7 +126,7 @@ export const lexiconData: LexiconDefinition = {
                     "SPR": {
                         "type": "exp-list-cons",
                         "FIRST": {
-                            "type": "word",
+                            "type": "expression",
                             "SYN": {
                                 "type": "syn-cat",
                                 "HEAD": { "type": "noun", "CASE": "nom", "AGR": "3sing" }
@@ -118,7 +152,7 @@ export const lexiconData: LexiconDefinition = {
                     "SPR": {
                         "type": "exp-list-cons",
                         "FIRST": {
-                            "type": "word",
+                            "type": "expression",
                             "SYN": {
                                 "type": "syn-cat",
                                 "HEAD": { "type": "noun", "CASE": "nom", "AGR": "3sing" }
@@ -129,7 +163,7 @@ export const lexiconData: LexiconDefinition = {
                     "COMPS": {
                         "type": "exp-list-cons",
                         "FIRST": {
-                            "type": "word",
+                            "type": "expression",
                             "SYN": {
                                 "type": "syn-cat",
                                 "HEAD": { "type": "noun", "CASE": "acc" }
@@ -193,7 +227,7 @@ export const lexiconData: LexiconDefinition = {
                     "COMPS": {
                         "type": "exp-list-cons",
                         "FIRST": {
-                            "type": "word",
+                            "type": "expression",
                             "SYN": {
                                 "type": "syn-cat",
                                 "HEAD": { "type": "noun", "CASE": "acc" }
@@ -204,7 +238,7 @@ export const lexiconData: LexiconDefinition = {
                     "MOD": {
                         "type": "exp-list-cons",
                         "FIRST": {
-                            "type": "word",
+                            "type": "expression",
                             "SYN": {
                                 "type": "syn-cat",
                                 "HEAD": { "type": "verb" }
