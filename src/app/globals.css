@@ -164,4 +164,6 @@ body {
     0 1px 0 rgb(226 232 240),
     0 0 0 1px rgb(255 255 255) inset;
   min-width: 48px;
+  max-width: 280px;
+  overflow-wrap: anywhere;
 }

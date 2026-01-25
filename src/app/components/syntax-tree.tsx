@@ -1,8 +1,16 @@
 import type { Node as ParseNode } from "../../lib/nlp/core/parser";
 
+export type MotherFormatterResult =
+  | string
+  | {
+      label: string;
+      meta?: string;
+      title?: string;
+    };
+
 type Props<T> = {
   root: ParseNode<T>;
-  formatMother?: (mother: T) => string;
+  formatMother?: (mother: T) => MotherFormatterResult;
 };
 
 const defaultFormatMother = (mother: unknown): string => {
@@ -11,6 +19,15 @@ const defaultFormatMother = (mother: unknown): string => {
     return String(mother);
   if (mother === null) return "null";
   if (mother === undefined) return "undefined";
+  if (
+    typeof mother === "object" &&
+    mother !== null &&
+    "toString" in mother &&
+    typeof (mother as { toString?: unknown }).toString === "function" &&
+    (mother as { toString: () => string }).toString !== Object.prototype.toString
+  ) {
+    return String(mother);
+  }
   try {
     return JSON.stringify(mother);
   } catch {
@@ -41,17 +58,27 @@ function TreeItem<T>({
   formatMother,
 }: {
   node: ParseNode<T>;
-  formatMother: (mother: T) => string;
+  formatMother: (mother: T) => MotherFormatterResult;
 }) {
   const children = getChildren(node);
   const mergeRule = getMergeRule(node);
 
+  const formatted = formatMother(node.mother);
+  const labelText = typeof formatted === "string" ? formatted : formatted.label;
+  const metaText = typeof formatted === "string" ? undefined : formatted.meta;
+  const titleText = typeof formatted === "string" ? undefined : formatted.title;
+
   return (
     <li>
-      <div className="syntax-tree__label">
-        <div className="text-xs font-semibold text-gray-900">
-          {formatMother(node.mother)}
+      <div className="syntax-tree__label" title={titleText}>
+        <div className="text-xs font-semibold text-gray-900 break-words">
+          {labelText}
         </div>
+        {metaText && (
+          <div className="mt-0.5 text-[11px] text-gray-600 break-words">
+            {metaText}
+          </div>
+        )}
         {node.token && (
           <div className="mt-0.5 font-mono text-[11px] text-gray-600">
             {node.token}
@@ -88,8 +115,8 @@ function TreeItem<T>({
 }
 
 export function SyntaxTree<T>({ root, formatMother }: Props<T>) {
-  const resolvedFormatMother =
-    formatMother ?? (defaultFormatMother as (mother: T) => string);
+  const resolvedFormatMother: (mother: T) => MotherFormatterResult =
+    formatMother ?? ((mother: T) => defaultFormatMother(mother));
 
   return (
     <ul className="syntax-tree">

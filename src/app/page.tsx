@@ -5,6 +5,7 @@ import { Grammar, parse, type Node as ParseNode } from "../lib/nlp/core/parser";
 import { CFG } from "../lib/nlp/grammars/cfg/cfg";
 import { SyntaxTree } from "./components/syntax-tree";
 import { HPSG } from "../lib/nlp/grammars/hpsg/hpsg";
+import { formatHpsgMother, isHpsgFeatureStructure } from "./components/hpsg-format";
 
 type RegisteredGrammar = {
   id: string;
@@ -118,16 +119,42 @@ export default function Home() {
     if (parseResult === null) return "No result yet.";
     if (parseResult.length === 0) return "No parses found.";
     try {
-      return JSON.stringify(parseResult, null, 2);
+      const seen = new WeakSet<object>();
+      return JSON.stringify(
+        parseResult,
+        (_key, value) => {
+          if (grammarId === "hpsg" && isHpsgFeatureStructure(value)) {
+            const formatted = formatHpsgMother(value);
+            if (typeof formatted === "object") {
+              return formatted.title ?? formatted.label;
+            }
+            return formatted;
+          }
+
+          if (typeof value === "object" && value !== null) {
+            if (seen.has(value)) return "[Circular]";
+            seen.add(value);
+          }
+
+          return value;
+        },
+        2,
+      );
     } catch {
       return String(parseResult);
     }
-  }, [parseResult]);
+  }, [grammarId, parseResult]);
 
   const parses = parseResult ?? [];
   const hasParses = parses.length > 0;
 
   const formatMotherForSummary = (mother: unknown): string => {
+    if (grammarId === "hpsg") {
+      const formatted = formatHpsgMother(mother);
+      if (typeof formatted === "string") return formatted;
+      return formatted.meta ? `${formatted.label} — ${formatted.meta}` : formatted.label;
+    }
+
     if (typeof mother === "string") return mother;
     if (typeof mother === "number" || typeof mother === "boolean")
       return String(mother);
@@ -139,6 +166,11 @@ export default function Home() {
       return String(mother);
     }
   };
+
+  const treeMotherFormatter = useMemo(() => {
+    if (grammarId === "hpsg") return (mother: unknown) => formatHpsgMother(mother);
+    return undefined;
+  }, [grammarId]);
 
   return (
     <main className="min-h-screen bg-white text-gray-900">
@@ -281,7 +313,7 @@ export default function Home() {
                       </span>
                     </div>
                     <div className="overflow-auto p-4">
-                      <SyntaxTree root={root} />
+                      <SyntaxTree root={root} formatMother={treeMotherFormatter} />
                     </div>
                   </div>
                 ))}
