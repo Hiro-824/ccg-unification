@@ -279,7 +279,7 @@ export const lexiconData: LexiconDefinition = {
                             },
                             "SEM": {
                                 "type": "sem-cat",
-                                "_id": "j"
+                                "INDEX": { "type": "index", "_id": "j" }
                             }
                         },
                         "REST": "exp-list-empty"
