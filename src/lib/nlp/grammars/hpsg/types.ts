@@ -67,6 +67,7 @@ export const typeDefinition = {
     "index": { parent: "top" },
 
     "reln": { parent: "top" },
+    "girl": { parent: "reln" },
 
     "rule-schema": { parent: "top", features: { "MOTHER": "expression", "HEAD-DTR": "expression", "NON-HEAD-DTR": "expression" } },
 };

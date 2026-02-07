@@ -67,7 +67,12 @@ export const lexiconData: LexiconDefinition = {
                     "MOD": "exp-list-empty"
                 }
             },
-            "SEM": { "type": "sem-cat" }
+            "SEM": {
+                "type": "sem-cat",
+                "MODE": "ref",
+                "INDEX": { "type": "index", "_id": "i" },
+                "RESTR": { "type": "pred-list-cons", "FIRST": { "type": "predication", "RELN": "girl", "ARG1": "#i" } },
+            }
         }
     ],
     "telescope": [
@@ -101,7 +106,12 @@ export const lexiconData: LexiconDefinition = {
                     "MOD": "exp-list-empty"
                 }
             },
-            "SEM": { "type": "sem-cat" }
+            "SEM": {
+                "type": "sem-cat",
+                "MODE": "ref",
+                "INDEX": { "type": "index", "_id": "i" },
+                "RESTR": { "type": "pred-list-cons", "FIRST": { "type": "predication", "RELN": "telescope", "ARG1": "#i" } },
+            }
         }
     ],
     "a": [
@@ -138,7 +148,10 @@ export const lexiconData: LexiconDefinition = {
                     "MOD": "exp-list-empty"
                 }
             },
-            "SEM": { "type": "sem-cat" }
+            "SEM": {
+                "type": "sem-cat",
+                "MODE": "none",
+            }
         }
     ],
     "sees": [
@@ -156,6 +169,10 @@ export const lexiconData: LexiconDefinition = {
                             "SYN": {
                                 "type": "syn-cat",
                                 "HEAD": { "type": "noun", "CASE": "nom", "AGR": "3sing" }
+                            },
+                            "SEM": {
+                                "type": "sem-cat",
+                                "INDEX": { "type": "index", "_id": "i" }
                             }
                         },
                         "REST": "exp-list-empty"
@@ -167,6 +184,10 @@ export const lexiconData: LexiconDefinition = {
                             "SYN": {
                                 "type": "syn-cat",
                                 "HEAD": { "type": "noun", "CASE": "acc" }
+                            },
+                            "SEM": {
+                                "type": "sem-cat",
+                                "INDEX": { "type": "index", "_id": "j" }
                             }
                         },
                         "REST": "exp-list-empty"
@@ -174,7 +195,12 @@ export const lexiconData: LexiconDefinition = {
                     "MOD": "exp-list-empty"
                 }
             },
-            "SEM": { "type": "sem-cat" }
+            "SEM": {
+                "type": "sem-cat",
+                "MODE": "prop",
+                "INDEX": { "type": "index" },
+                "RESTR": { "type": "pred-list-cons", "FIRST": { "type": "predication", "RELN": "see", "ARG1": "#i", "ARG2": "#j" } },
+            }
         }
     ],
     "with": [
@@ -195,6 +221,10 @@ export const lexiconData: LexiconDefinition = {
                             "SYN": {
                                 "type": "syn-cat",
                                 "HEAD": { "type": "noun", "CASE": "acc" }
+                            },
+                            "SEM": {
+                                "type": "sem-cat",
+                                "INDEX": { "type": "index", "_id": "j" }
                             }
                         },
                         "REST": "exp-list-empty"
@@ -206,13 +236,22 @@ export const lexiconData: LexiconDefinition = {
                             "SYN": {
                                 "type": "syn-cat",
                                 "HEAD": { "type": "noun" }
+                            },
+                            "SEM": {
+                                "type": "sem-cat",
+                                "INDEX": { "type": "index", "_id": "i" }
                             }
                         },
                         "REST": "exp-list-empty"
                     }
                 }
             },
-            "SEM": { "type": "sem-cat" }
+            "SEM": {
+                "type": "sem-cat",
+                "MODE": "prop",
+                "INDEX": { "type": "index" },
+                "RESTR": { "type": "pred-list-cons", "FIRST": { "type": "predication", "RELN": "with", "ARG1": "#i", "ARG2": "#j" } },
+            }
         },
         {
             "type": "word",

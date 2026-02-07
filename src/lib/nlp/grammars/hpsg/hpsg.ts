@@ -11,7 +11,61 @@ export class HPSG implements Grammar<FeatureStructure> {
     private _lexicon: Map<string, FeatureStructure[]> = new Map();
     private _rules: Map<string, FeatureStructure> = new Map();
 
+    private ensureRelnSubtype(relnName: string): void {
+        if (relnName === "reln") return;
+
+        const hierarchy: unknown = (this.types as unknown as { _typeHierarchy?: unknown })._typeHierarchy;
+        const hasType =
+            hierarchy instanceof Map
+                ? hierarchy.has(relnName)
+                : typeof (hierarchy as { has?: unknown } | undefined)?.has === "function"
+                    ? (hierarchy as { has: (k: string) => boolean }).has(relnName)
+                    : false;
+
+        if (hasType) {
+            if (!this.types.isSubtype(relnName, "reln")) {
+                console.warn(
+                    `Type "${relnName}" already exists but is not a subtype of "reln"; skipping auto-add.`
+                );
+            }
+            return;
+        }
+
+        this.types.addType(relnName, "reln");
+    }
+
+    private collectRelnTypesFromLexicon(definition: LexiconDefinition): Set<string> {
+        const relns = new Set<string>();
+
+        const visit = (node: unknown) => {
+            if (typeof node === "string") return;
+            if (Array.isArray(node)) {
+                for (const item of node) visit(item);
+                return;
+            }
+            if (node === null || typeof node !== "object") return;
+
+            for (const [key, value] of Object.entries(node as Record<string, unknown>)) {
+                if (key === "RELN" && typeof value === "string" && !value.startsWith("#")) {
+                    relns.add(value);
+                    continue;
+                }
+                visit(value);
+            }
+        };
+
+        for (const fsDefs of Object.values(definition)) {
+            for (const fsDef of fsDefs) visit(fsDef);
+        }
+
+        return relns;
+    }
+
     loadLexicon(definition: LexiconDefinition): void {
+        for (const relnName of this.collectRelnTypesFromLexicon(definition)) {
+            this.ensureRelnSubtype(relnName);
+        }
+
         for (const [word, fsDefs] of Object.entries(definition)) {
             const fsList: FeatureStructure[] = [];
 
