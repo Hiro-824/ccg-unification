@@ -11,6 +11,47 @@ export class HPSG implements Grammar<FeatureStructure> {
     private _lexicon: Map<string, FeatureStructure[]> = new Map();
     private _rules: Map<string, FeatureStructure> = new Map();
 
+    private getRestr(expr: FeatureStructure): FeatureStructure {
+        const restr = expr.getIn(["SEM", "RESTR"]);
+        return restr ?? new FeatureStructure("pred-list-empty");
+    }
+
+    private concatPredList(prefix: FeatureStructure, suffix: FeatureStructure): FeatureStructure {
+        const p = prefix.dereference();
+        const s = suffix.dereference();
+
+        const t = p.getType();
+        if (t === "pred-list-empty") return s;
+        if (t !== "pred-list-cons") {
+            throw new Error(`Unsupported pred-list type for concatenation: ${t}`);
+        }
+
+        const first = p.get("FIRST");
+        if (!first) {
+            throw new Error(`Malformed pred-list-cons: missing FIRST`);
+        }
+
+        const rest = p.get("REST");
+        const newRest = rest ? this.concatPredList(rest, s) : s;
+
+        const out = new FeatureStructure("pred-list-cons");
+        out.add("FIRST", first, this.types);
+        out.add("REST", newRest, this.types);
+        return out;
+    }
+
+    private setMotherRestrAsSum(mother: FeatureStructure, head: FeatureStructure, nonHead: FeatureStructure): void {
+        const headRestr = this.getRestr(head);
+        const nonHeadRestr = this.getRestr(nonHead);
+        const summed = this.concatPredList(headRestr, nonHeadRestr);
+
+        const motherSem = mother.get("SEM");
+        if (!motherSem) {
+            throw new Error("Mother is missing SEM");
+        }
+        motherSem.add("RESTR", summed, this.types);
+    }
+
     private ensureRelnSubtype(relnName: string): void {
         if (relnName === "reln") return;
 
@@ -157,6 +198,7 @@ export class HPSG implements Grammar<FeatureStructure> {
             try {
                 FeatureStructure.unify(targetHead, candidateHead, this.types);
                 FeatureStructure.unify(targetNonHead, candidateNonHead, this.types);
+                this.setMotherRestrAsSum(targetMother, candidateHead, candidateNonHead);
                 console.log(`Rule applied: ${ruleName}`);
                 results.push({ category: targetMother, rule: ruleName });
             } catch (e) {

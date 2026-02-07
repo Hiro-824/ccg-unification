@@ -30,7 +30,8 @@ export const ruleData: RuleDefinition = {
             },
             "SEM": {
                 "type": "sem-cat",
-                "_id": "4",
+                "MODE": { "type": "mode", "_id": "m" },
+                "INDEX": { "type": "index", "_id": "i" },
             }
         },
         "NON-HEAD-DTR": {
@@ -52,7 +53,11 @@ export const ruleData: RuleDefinition = {
                     "MOD": "#3",
                 }
             },
-            "SEM": "#4",
+            "SEM": {
+                "type": "sem-cat",
+                "MODE": "#m",
+                "INDEX": "#i",
+            },
         }
     },
     "head-complement": {
@@ -83,7 +88,8 @@ export const ruleData: RuleDefinition = {
             },
             "SEM": {
                 "type": "sem-cat",
-                "_id": "6",
+                "MODE": { "type": "mode", "_id": "m" },
+                "INDEX": { "type": "index", "_id": "i" },
             }
         },
         "NON-HEAD-DTR": {
@@ -106,7 +112,11 @@ export const ruleData: RuleDefinition = {
                     "MOD": "#4"
                 }
             },
-            "SEM": "#6"
+            "SEM": {
+                "type": "sem-cat",
+                "MODE": "#m",
+                "INDEX": "#i",
+            }
         }
     },
     "head-modifier": {
@@ -137,7 +147,8 @@ export const ruleData: RuleDefinition = {
             },
             "SEM": {
                 "type": "sem-cat",
-                "_id": "6",
+                "MODE": { "type": "mode", "_id": "m" },
+                "INDEX": { "type": "index", "_id": "i" },
             }
         },
         "HEAD-DTR": {
@@ -155,7 +166,11 @@ export const ruleData: RuleDefinition = {
                     "MOD": "#4"
                 }
             },
-            "SEM": "#6"
+            "SEM": {
+                "type": "sem-cat",
+                "MODE": "#m",
+                "INDEX": "#i",
+            }
         },
         "NON-HEAD-DTR": {
             "type": "expression",
