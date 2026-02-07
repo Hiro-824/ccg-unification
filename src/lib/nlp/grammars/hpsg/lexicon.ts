@@ -276,6 +276,10 @@ export const lexiconData: LexiconDefinition = {
                             "SYN": {
                                 "type": "syn-cat",
                                 "HEAD": { "type": "noun", "CASE": "acc" }
+                            },
+                            "SEM": {
+                                "type": "sem-cat",
+                                "_id": "j"
                             }
                         },
                         "REST": "exp-list-empty"
@@ -293,7 +297,12 @@ export const lexiconData: LexiconDefinition = {
                     }
                 }
             },
-            "SEM": { "type": "sem-cat" }
+            "SEM": {
+                "type": "sem-cat",
+                "MODE": "prop",
+                "INDEX": { "type": "index" },
+                "RESTR": { "type": "pred-list-cons", "FIRST": { "type": "predication", "RELN": "with", "ARG2": "#j" } },
+            }
         }
     ],
 };
