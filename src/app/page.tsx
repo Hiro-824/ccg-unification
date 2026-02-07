@@ -6,6 +6,7 @@ import { CFG } from "../lib/nlp/grammars/cfg/cfg";
 import { SyntaxTree } from "./components/syntax-tree";
 import { HPSG } from "../lib/nlp/grammars/hpsg/hpsg";
 import { formatHpsgMother, isHpsgFeatureStructure } from "./components/hpsg-format";
+import { Dictionary } from "./components/dictionary";
 
 type RegisteredGrammar = {
   id: string;
@@ -205,30 +206,14 @@ export default function Home() {
           </div>
 
           <div className="space-y-3">
-            <div className="flex items-center justify-between">
-              <span className="text-sm font-medium text-gray-800">
-                Available words
-              </span>
-              <span className="text-xs text-gray-500">
-                {vocabulary.length} word{vocabulary.length === 1 ? "" : "s"}
-              </span>
-            </div>
-            <div className="flex flex-wrap gap-2 rounded-lg border border-dashed border-gray-200 bg-gray-50 px-3 py-3">
-              {vocabulary.length ? (
-                vocabulary.map((word) => (
-                  <span
-                    key={word}
-                    className="rounded-full border border-gray-300 bg-white px-3 py-1 text-xs font-medium text-gray-800"
-                  >
-                    {word}
-                  </span>
-                ))
-              ) : (
-                <span className="text-sm text-gray-500">
-                  No vocabulary registered for this grammar.
-                </span>
-              )}
-            </div>
+            <Dictionary
+              key={grammarId}
+              grammarId={grammarId}
+              words={vocabulary}
+              getEntries={(word) =>
+                grammarInstance ? grammarInstance.getTerminalCategories(word) : []
+              }
+            />
           </div>
 
           <div className="space-y-3">
