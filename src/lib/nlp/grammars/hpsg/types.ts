@@ -3,6 +3,10 @@ export const typeDefinition = {
     "exp-list-empty": { parent: "exp-list" },
     "exp-list-cons": { parent: "exp-list", features: { "FIRST": "expression", "REST": "exp-list" } },
 
+    "pred-list": { parent: "top" },
+    "pred-list-empty": { parent: "pred-list" },
+    "pred-list-cons": { parent: "pred-list", features: { "FIRST": "predication", "REST": "pred-list" } },
+
     "per": { parent: "top" },
     "1st": { parent: "per" },
     "2nd": { parent: "per" },
@@ -27,11 +31,13 @@ export const typeDefinition = {
 
     "syn-cat": { parent: "top", features: { "HEAD": "pos", "VAL": "val-cat" } },
     "val-cat": { parent: "top", features: { "SPR": "exp-list", "COMPS": "exp-list", "MOD": "exp-list" } },
-    "sem-cat": { parent: "top" },
+    "sem-cat": { parent: "top", features: { "MODE": "mode", "INDEX": "index", "RESTR": "pred-list" } },
 
     "expression": { parent: "top", features: { "SYN": "syn-cat", "SEM": "sem-cat" } },
     "word": { parent: "expression" },
     "phrase": { parent: "expression" },
+
+    "predication": { parent: "top", features: { "RELN": "reln", "ARG1": "index", "ARG2": "index", "ARG3": "index", } },
 
     "agr-cat": { parent: "top", features: { "PER": "per", "NUM": "num" } },
     "3sing": { parent: "agr-cat", features: { "PER": "3rd", "NUM": "sg", "GEND": "gend" } },
@@ -50,6 +56,17 @@ export const typeDefinition = {
     "verb": { parent: "agr-pos", features: { "AUX": "bool" } },
     "noun": { parent: "agr-pos", features: { "CASE": "case" } },
     "det": { parent: "agr-pos", features: { "COUNT": "bool" } },
+
+    "mode": { parent: "top" },
+    "prop": { parent: "mode" },
+    "ques": { parent: "mode" },
+    "dir": { parent: "mode" },
+    "ref": { parent: "mode" },
+    "none": { parent: "mode" },
+
+    "index": { parent: "top" },
+
+    "reln": { parent: "top" },
 
     "rule-schema": { parent: "top", features: { "MOTHER": "expression", "HEAD-DTR": "expression", "NON-HEAD-DTR": "expression" } },
 };
