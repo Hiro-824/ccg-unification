@@ -30,5 +30,8 @@ assertParses("with telescope");
 // modifier should still work when lexicon licenses it ("with" has MOD)
 assertParses("telescope with telescope");
 
-console.log("OK");
+// binding: anaphor must have antecedent in ARG-ST
+assertParses("mary sees herself");
+assertNoParses("herself sees mary");
 
+console.log("OK");

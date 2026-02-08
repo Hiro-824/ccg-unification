@@ -11,7 +11,12 @@ export const lexiconData: LexiconDefinition = {
                 "HEAD": { "type": "noun", "AGR": "3sing" },
                 "VAL": { "type": "val-cat", "SPR": "exp-list-empty", "COMPS": "exp-list-empty", "MOD": "exp-list-empty" }
             },
-            "SEM": { "type": "sem-cat" },
+            "SEM": {
+                "type": "sem-cat",
+                "MODE": "ref",
+                "INDEX": { "type": "index", "_id": "i" },
+                "RESTR": { "type": "pred-list-cons", "FIRST": { "type": "predication", "RELN": "named Kim", "ARG1": "#i" } },
+            },
             "ARG-ST": "exp-list-empty"
         }
     ],
@@ -20,10 +25,21 @@ export const lexiconData: LexiconDefinition = {
             "type": "word",
             "SYN": {
                 "type": "syn-cat",
-                "HEAD": { "type": "noun", "AGR": "3sing" },
+                "HEAD": {
+                    "type": "noun",
+                    "AGR": {
+                        "type": "3sing",
+                        "GEND": "masc"
+                    }
+                },
                 "VAL": { "type": "val-cat", "SPR": "exp-list-empty", "COMPS": "exp-list-empty", "MOD": "exp-list-empty" }
             },
-            "SEM": { "type": "sem-cat" },
+            "SEM": {
+                "type": "sem-cat",
+                "MODE": "ref",
+                "INDEX": { "type": "index", "_id": "i" },
+                "RESTR": { "type": "pred-list-cons", "FIRST": { "type": "predication", "RELN": "named John", "ARG1": "#i" } },
+            },
             "ARG-ST": "exp-list-empty"
         }
     ],
@@ -32,10 +48,21 @@ export const lexiconData: LexiconDefinition = {
             "type": "word",
             "SYN": {
                 "type": "syn-cat",
-                "HEAD": { "type": "noun", "AGR": "3sing" },
+                "HEAD": {
+                    "type": "noun",
+                    "AGR": {
+                        "type": "3sing",
+                        "GEND": "fem"
+                    }
+                },
                 "VAL": { "type": "val-cat", "SPR": "exp-list-empty", "COMPS": "exp-list-empty", "MOD": "exp-list-empty" }
             },
-            "SEM": { "type": "sem-cat" },
+            "SEM": {
+                "type": "sem-cat",
+                "MODE": "ref",
+                "INDEX": { "type": "index", "_id": "i" },
+                "RESTR": { "type": "pred-list-cons", "FIRST": { "type": "predication", "RELN": "named Mary", "ARG1": "#i" } },
+            },
             "ARG-ST": "exp-list-empty"
         }
     ],
@@ -47,6 +74,7 @@ export const lexiconData: LexiconDefinition = {
                 "HEAD": {
                     "type": "noun", "AGR": {
                         "type": "3sing",
+                        "GEND": "fem",
                         "_id": "1"
                     }
                 },
@@ -277,6 +305,34 @@ export const lexiconData: LexiconDefinition = {
                         }
                     }
                 },
+            },
+            "ARG-ST": "exp-list-empty"
+        },
+    ],
+    "herself": [
+        {
+            "type": "word",
+            "SYN": {
+                "type": "syn-cat",
+                "HEAD": {
+                    "type": "noun",
+                    "AGR": {
+                        "type": "3sing",
+                        "GEND": "fem",
+                    }
+                },
+                "VAL": {
+                    "type": "val-cat",
+                    "SPR": "exp-list-empty",
+                    "COMPS": "exp-list-empty",
+                    "MOD": "exp-list-empty"
+                }
+            },
+            "SEM": {
+                "type": "sem-cat",
+                "MODE": "ana",
+                "INDEX": { "type": "index" },
+                "RESTR": "pred-list-empty",
             },
             "ARG-ST": "exp-list-empty"
         },
@@ -593,6 +649,6 @@ export const lexiconData: LexiconDefinition = {
                 "RESTR": { "type": "pred-list-cons", "FIRST": { "type": "predication", "RELN": "with", "ARG2": "#j" } },
             },
             "ARG-ST": { "type": "exp-list-cons", "FIRST": "#arg_comps_0", "REST": "exp-list-empty" }
-        }
+        },
     ],
 };
