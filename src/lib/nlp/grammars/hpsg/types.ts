@@ -33,7 +33,7 @@ export const typeDefinition = {
     "val-cat": { parent: "top", features: { "SPR": "exp-list", "COMPS": "exp-list", "MOD": "exp-list" } },
     "sem-cat": { parent: "top", features: { "MODE": "mode", "INDEX": "index", "RESTR": "pred-list" } },
 
-    "expression": { parent: "top", features: { "SYN": "syn-cat", "SEM": "sem-cat" } },
+    "expression": { parent: "top", features: { "SYN": "syn-cat", "SEM": "sem-cat", "ARG-ST": "exp-list" } },
     "word": { parent: "expression" },
     "phrase": { parent: "expression" },
 
@@ -62,6 +62,7 @@ export const typeDefinition = {
     "ques": { parent: "mode" },
     "dir": { parent: "mode" },
     "ref": { parent: "mode" },
+    "ana": { parent: "mode" },
     "none": { parent: "mode" },
 
     "index": { parent: "top" },
