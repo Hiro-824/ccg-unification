@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "hpsg:regression": "tsc --outDir /tmp/hpsg-regression --module commonjs --moduleResolution node --target ES2017 --esModuleInterop --skipLibCheck scripts/hpsg-regression.ts && node /tmp/hpsg-regression/scripts/hpsg-regression.js"
   },
   "dependencies": {
     "next": "16.1.1",

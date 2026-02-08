@@ -3,6 +3,9 @@
 :root {
   --background: #ffffff;
   --foreground: #171717;
+  /* Fallback font variables for themes that referenced Geist. */
+  --font-geist-sans: "Inter", "Segoe UI", system-ui, -apple-system, sans-serif;
+  --font-geist-mono: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
 }
 
 @theme inline {
@@ -23,4 +26,144 @@ body {
   background: var(--background);
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
+}
+
+/* Simple branching syntax tree (ul/li + connector lines). */
+.syntax-tree,
+.syntax-tree ul {
+  display: flex;
+  justify-content: center;
+  padding-left: 0;
+  margin: 0;
+  position: relative;
+}
+
+.syntax-tree {
+  --syntax-tree-edge-height: 34px;
+}
+
+.syntax-tree ul {
+  padding-top: var(--syntax-tree-edge-height);
+}
+
+.syntax-tree__children {
+  position: relative;
+}
+
+.syntax-tree__children::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 50%;
+  height: var(--syntax-tree-edge-height);
+  border-left: 1px solid rgb(203 213 225); /* slate-300 */
+}
+
+.syntax-tree__children--merge {
+  --syntax-tree-edge-label-gap: 18px;
+}
+
+.syntax-tree__children--merge::before {
+  height: calc(
+    (var(--syntax-tree-edge-height) - var(--syntax-tree-edge-label-gap)) / 2
+  );
+}
+
+.syntax-tree__children--merge::after {
+  content: "";
+  position: absolute;
+  top: calc((var(--syntax-tree-edge-height) + var(--syntax-tree-edge-label-gap)) / 2);
+  left: 50%;
+  height: calc(
+    (var(--syntax-tree-edge-height) - var(--syntax-tree-edge-label-gap)) / 2
+  );
+  border-left: 1px solid rgb(203 213 225); /* slate-300 */
+}
+
+.syntax-tree__edge-label {
+  position: absolute;
+  top: calc(var(--syntax-tree-edge-height) / 2);
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 2;
+  max-width: 220px;
+  padding: 2px 6px;
+  border: 1px solid rgb(226 232 240); /* slate-200 */
+  border-radius: 9999px;
+  background: rgb(255 255 255);
+  box-shadow: 0 0 0 2px rgb(255 255 255);
+  font-family: var(--font-geist-mono);
+  font-size: 10px;
+  line-height: 1.2;
+  color: rgb(100 116 139); /* slate-500 */
+  white-space: normal;
+  word-break: break-word;
+  pointer-events: none;
+}
+
+.syntax-tree li {
+  list-style: none;
+  position: relative;
+  padding: var(--syntax-tree-edge-height) 10px 0 10px;
+  text-align: center;
+}
+
+.syntax-tree li::before,
+.syntax-tree li::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  width: 50%;
+  height: var(--syntax-tree-edge-height);
+  border-top: 1px solid rgb(203 213 225); /* slate-300 */
+}
+
+.syntax-tree li::before {
+  right: 50%;
+}
+
+.syntax-tree li::after {
+  left: 50%;
+  border-left: 1px solid rgb(203 213 225);
+}
+
+.syntax-tree li:only-child::before,
+.syntax-tree li:only-child::after {
+  display: none;
+}
+
+.syntax-tree li:only-child {
+  padding-top: 0;
+}
+
+.syntax-tree li:first-child::before,
+.syntax-tree li:last-child::after {
+  border: 0 none;
+}
+
+.syntax-tree li:last-child::before {
+  border-right: 1px solid rgb(203 213 225);
+  border-radius: 0 6px 0 0;
+}
+
+.syntax-tree li:first-child::after {
+  border-radius: 6px 0 0 0;
+}
+
+.syntax-tree ul::before {
+  content: none;
+}
+
+.syntax-tree__label {
+  display: inline-block;
+  border: 1px solid rgb(226 232 240); /* slate-200 */
+  border-radius: 10px;
+  padding: 8px 10px;
+  background: rgb(255 255 255);
+  box-shadow:
+    0 1px 0 rgb(226 232 240),
+    0 0 0 1px rgb(255 255 255) inset;
+  min-width: 48px;
+  max-width: 280px;
+  overflow-wrap: anywhere;
 }

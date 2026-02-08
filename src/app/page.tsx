@@ -1,52 +1,355 @@
 "use client";
 
-import { useState } from "react";
-import { CCG } from "../lib/nlp/ccg/grammar";
-import { FeatureStructureUnifier } from "../lib/nlp/features/unifier";
-import { englishLexicon } from "../lib/nlp/lexicon/en";
-import { parse } from "../lib/nlp/core/parser";
+import { useMemo, useState } from "react";
+import { Grammar, parse, type Node as ParseNode } from "../lib/nlp/core/parser";
+import { CFG } from "../lib/nlp/grammars/cfg/cfg";
+import { SyntaxTree } from "./components/syntax-tree";
+import { HPSG } from "../lib/nlp/grammars/hpsg/hpsg";
+import { formatHpsgMother, isHpsgFeatureStructure } from "./components/hpsg-format";
+import { Dictionary } from "./components/dictionary";
+import { interpretHpsgSemantics } from "./components/hpsg-semantics";
+
+type RegisteredGrammar = {
+  id: string;
+  label: string;
+  build: () => Grammar<unknown>;
+};
+
+const GRAMMARS: RegisteredGrammar[] = [
+  {
+    id: "cfg",
+    label: "Context-Free Grammar (demo)",
+    build: () => new CFG(),
+  },
+  {
+    id: "hpsg",
+    label: "HPSG",
+    build: () => new HPSG(),
+  }
+];
+
+const normalizeSentence = (input: string): string =>
+  input
+    .toLowerCase()
+    .replace(/[^a-z0-9\s'-]/gi, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+
+const toWords = (input: string): string[] => {
+  const normalized = normalizeSentence(input);
+  return normalized ? normalized.split(" ") : [];
+};
 
 export default function Home() {
-  const [input, setInput] = useState("I must see him");
-  const [result, setResult] = useState<string>("");
+  const [grammarId, setGrammarId] = useState(GRAMMARS[0]?.id ?? "");
+  const [rawSentence, setRawSentence] = useState("");
+  const [warning, setWarning] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [parseResult, setParseResult] = useState<ParseNode<unknown>[] | null>(
+    null,
+  );
 
-  const runParse = () => {
-    // 1. Setup Logic
-    const unifier = new FeatureStructureUnifier();
-    const grammar = new CCG(englishLexicon, unifier);
+  const activeGrammarEntry = useMemo(
+    () => GRAMMARS.find((g) => g.id === grammarId) ?? GRAMMARS[0],
+    [grammarId],
+  );
 
-    // 2. Execute Parse
-    const words = input.trim().split(/\s+/);
-    const trees = parse(words, grammar);
+  const grammarInstance = useMemo(
+    () => activeGrammarEntry?.build(),
+    [activeGrammarEntry],
+  );
 
-    // 3. Display Result
-    if (trees.length > 0) {
-      setResult(JSON.stringify(trees, null, 2));
-    } else {
-      setResult("Parsing Failed (No valid tree found).");
+  const vocabulary = useMemo(
+    () => (grammarInstance ? grammarInstance.getAvailableWords() : []),
+    [grammarInstance],
+  );
+
+  const vocabularySet = useMemo(
+    () => new Set(vocabulary.map((word) => word.toLowerCase())),
+    [vocabulary],
+  );
+
+  const handleGrammarChange = (nextId: string) => {
+    setGrammarId(nextId);
+    // Reset UI state when switching grammars to avoid stale messages/results.
+    setWarning(null);
+    setError(null);
+    setParseResult(null);
+  };
+
+  const handleParse = () => {
+    setWarning(null);
+    setError(null);
+
+    if (!grammarInstance) {
+      setError("No grammar is available.");
+      setParseResult(null);
+      return;
+    }
+
+    const words = toWords(rawSentence);
+
+    if (words.length === 0) {
+      setError("Please enter a sentence to parse.");
+      setParseResult(null);
+      return;
+    }
+
+    const unknownWords = words.filter((word) => !vocabularySet.has(word));
+
+    if (unknownWords.length > 0) {
+      // Consistent behavior: skip parsing when out-of-vocabulary words are present.
+      setWarning(`Unknown words: ${[...new Set(unknownWords)].join(", ")}`);
+      setParseResult(null);
+      return;
+    }
+
+    try {
+      const result = parse(words, grammarInstance);
+      setParseResult(result);
+    } catch (err) {
+      setError(
+        err instanceof Error
+          ? err.message
+          : "Parsing failed. Please try again.",
+      );
+      setParseResult(null);
     }
   };
 
-  return (
-    <div style={{ padding: "20px", fontFamily: "monospace" }}>
-      <h1>CCG Feature Structure Parser</h1>
-      
-      <div style={{ marginBottom: "20px" }}>
-        <input 
-          type="text" 
-          value={input} 
-          onChange={(e) => setInput(e.target.value)} 
-          style={{ width: "300px", padding: "5px", marginRight: "10px" }}
-        />
-        <button onClick={runParse} style={{ padding: "5px 10px" }}>
-          Parse
-        </button>
-      </div>
+  const formattedResult = useMemo(() => {
+    if (parseResult === null) return "No result yet.";
+    if (parseResult.length === 0) return "No parses found.";
+    try {
+      const seen = new WeakSet<object>();
+      return JSON.stringify(
+        parseResult,
+        (_key, value) => {
+          if (grammarId === "hpsg" && isHpsgFeatureStructure(value)) {
+            const formatted = formatHpsgMother(value);
+            if (typeof formatted === "object") {
+              return formatted.title ?? formatted.label;
+            }
+            return formatted;
+          }
 
-      <h3>Result:</h3>
-      <pre style={{ backgroundColor: "#f4f4f4", padding: "10px", borderRadius: "5px" }}>
-        {result}
-      </pre>
-    </div>
+          if (typeof value === "object" && value !== null) {
+            if (seen.has(value)) return "[Circular]";
+            seen.add(value);
+          }
+
+          return value;
+        },
+        2,
+      );
+    } catch {
+      return String(parseResult);
+    }
+  }, [grammarId, parseResult]);
+
+  const parses = parseResult ?? [];
+  const hasParses = parses.length > 0;
+
+  const formatMotherForSummary = (mother: unknown): string => {
+    if (grammarId === "hpsg") {
+      const formatted = formatHpsgMother(mother);
+      if (typeof formatted === "string") return formatted;
+      return formatted.meta ? `${formatted.label} — ${formatted.meta}` : formatted.label;
+    }
+
+    if (typeof mother === "string") return mother;
+    if (typeof mother === "number" || typeof mother === "boolean")
+      return String(mother);
+    if (mother === null) return "null";
+    if (mother === undefined) return "undefined";
+    try {
+      return JSON.stringify(mother);
+    } catch {
+      return String(mother);
+    }
+  };
+
+  const treeMotherFormatter = useMemo(() => {
+    if (grammarId === "hpsg") return (mother: unknown) => formatHpsgMother(mother);
+    return undefined;
+  }, [grammarId]);
+
+  return (
+    <main className="min-h-screen bg-white text-gray-900">
+      <div className="mx-auto flex max-w-3xl flex-col gap-8 px-4 py-12 sm:px-6 lg:px-8">
+        <header className="space-y-2">
+          <p className="text-sm font-semibold text-gray-700">Sentence Parser</p>
+          <p className="text-sm text-gray-600">
+            Select a grammar, review its vocabulary, enter a sentence, and parse it.
+          </p>
+        </header>
+
+        <section className="grid gap-6">
+          <div className="space-y-2">
+            <label
+              htmlFor="grammar"
+              className="text-sm font-medium text-gray-800"
+            >
+              Grammar
+            </label>
+            <select
+              id="grammar"
+              value={grammarId}
+              onChange={(event) => handleGrammarChange(event.target.value)}
+              className="w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm shadow-sm outline-none transition focus:border-gray-500 focus:ring-2 focus:ring-gray-300"
+            >
+              {GRAMMARS.map((grammar) => (
+                <option key={grammar.id} value={grammar.id}>
+                  {grammar.label}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div className="space-y-3">
+            <Dictionary
+              key={grammarId}
+              grammarId={grammarId}
+              words={vocabulary}
+              getEntries={(word) =>
+                grammarInstance ? grammarInstance.getTerminalCategories(word) : []
+              }
+            />
+          </div>
+
+          <div className="space-y-3">
+            <label
+              htmlFor="sentence"
+              className="text-sm font-medium text-gray-800"
+            >
+              Sentence
+            </label>
+            <textarea
+              id="sentence"
+              rows={3}
+              value={rawSentence}
+              onChange={(event) => setRawSentence(event.target.value)}
+              className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm shadow-sm outline-none transition focus:border-gray-500 focus:ring-2 focus:ring-gray-300"
+              placeholder="Type a sentence using the available words..."
+            />
+            <p className="text-xs text-gray-500">
+              Input is lowercased and punctuation is removed before parsing.
+            </p>
+            <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
+              <button
+                type="button"
+                onClick={handleParse}
+                className="inline-flex justify-center rounded-md bg-gray-900 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-gray-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-900"
+              >
+                Parse
+              </button>
+              <button
+                type="button"
+                onClick={() => setRawSentence("john sees mary")}
+                className="inline-flex justify-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-semibold text-gray-800 shadow-sm transition hover:bg-gray-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-500"
+              >
+                Use example
+              </button>
+              <span className="text-xs text-gray-500">
+                Words are split on spaces after normalization.
+              </span>
+            </div>
+          </div>
+
+          {(warning || error) && (
+            <div className="space-y-2">
+              {warning && (
+                <div
+                  role="status"
+                  className="rounded-md border border-amber-200 bg-amber-50 px-3 py-2 text-sm text-amber-900"
+                >
+                  {warning}
+                </div>
+              )}
+              {error && (
+                <div
+                  role="alert"
+                  className="rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-800"
+                >
+                  {error}
+                </div>
+              )}
+            </div>
+          )}
+
+          <div className="space-y-2">
+            <div className="flex items-center justify-between">
+              <span className="text-sm font-medium text-gray-800">
+                Parse result
+              </span>
+            </div>
+            {hasParses ? (
+              <div className="space-y-6">
+                {parses.map((root, idx) => {
+                  const meaning =
+                    grammarId === "hpsg" ? interpretHpsgSemantics(root.mother) : null;
+
+                  return (
+                    <div
+                      key={idx}
+                      className="rounded-lg border border-gray-200 bg-white shadow-sm"
+                    >
+                      <div className="flex items-center justify-between border-b border-gray-100 px-4 py-2">
+                        <span className="text-xs font-semibold text-gray-800">
+                          Parse {idx + 1}
+                        </span>
+                        <span className="text-xs text-gray-500">
+                          Root: {formatMotherForSummary(root.mother)}
+                        </span>
+                      </div>
+
+                      {grammarId === "hpsg" && (
+                        <div className="border-b border-gray-100 px-4 py-3">
+                          <div className="text-[11px] font-medium text-gray-700">
+                            Meaning (SEM)
+                          </div>
+                          <div className="mt-1 space-y-2">
+                            <div className="break-words font-mono text-xs text-gray-900">
+                              {meaning?.summary ?? "(no SEM)"}
+                            </div>
+                            {meaning?.details && (
+                              <details className="rounded-md border border-gray-200 bg-gray-50">
+                                <summary className="cursor-pointer select-none px-3 py-2 text-[11px] font-medium text-gray-800">
+                                  Details
+                                </summary>
+                                <pre className="overflow-auto border-t border-gray-200 p-3 font-mono text-xs text-gray-800">
+                                  {meaning.details}
+                                </pre>
+                              </details>
+                            )}
+                          </div>
+                        </div>
+                      )}
+
+                      <div className="overflow-auto p-4">
+                        <SyntaxTree root={root} formatMother={treeMotherFormatter} />
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            ) : (
+              <div className="min-h-[120px] rounded-lg border border-gray-200 bg-gray-50 p-4 text-sm text-gray-600 shadow-inner">
+                {formattedResult}
+              </div>
+            )}
+
+            <details className="rounded-lg border border-gray-200 bg-gray-50">
+              <summary className="cursor-pointer select-none px-4 py-2 text-sm font-medium text-gray-800">
+                Raw JSON
+              </summary>
+              <pre className="max-h-[360px] overflow-auto border-t border-gray-200 p-4 text-xs text-gray-800">
+                {formattedResult}
+              </pre>
+            </details>
+          </div>
+        </section>
+      </div>
+    </main>
   );
 }
