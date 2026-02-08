@@ -11,7 +11,8 @@ export const lexiconData: LexiconDefinition = {
                 "HEAD": { "type": "noun", "AGR": "3sing" },
                 "VAL": { "type": "val-cat", "SPR": "exp-list-empty", "COMPS": "exp-list-empty", "MOD": "exp-list-empty" }
             },
-            "SEM": { "type": "sem-cat" }
+            "SEM": { "type": "sem-cat" },
+            "ARG-ST": "exp-list-empty"
         }
     ],
     "john": [
@@ -22,7 +23,8 @@ export const lexiconData: LexiconDefinition = {
                 "HEAD": { "type": "noun", "AGR": "3sing" },
                 "VAL": { "type": "val-cat", "SPR": "exp-list-empty", "COMPS": "exp-list-empty", "MOD": "exp-list-empty" }
             },
-            "SEM": { "type": "sem-cat" }
+            "SEM": { "type": "sem-cat" },
+            "ARG-ST": "exp-list-empty"
         }
     ],
     "mary": [
@@ -33,7 +35,8 @@ export const lexiconData: LexiconDefinition = {
                 "HEAD": { "type": "noun", "AGR": "3sing" },
                 "VAL": { "type": "val-cat", "SPR": "exp-list-empty", "COMPS": "exp-list-empty", "MOD": "exp-list-empty" }
             },
-            "SEM": { "type": "sem-cat" }
+            "SEM": { "type": "sem-cat" },
+            "ARG-ST": "exp-list-empty"
         }
     ],
     "girl": [
@@ -53,6 +56,7 @@ export const lexiconData: LexiconDefinition = {
                         "type": "exp-list-cons",
                         "FIRST": {
                             "type": "expression",
+                            "_id": "arg_spr_0",
                             "SYN": {
                                 "type": "syn-cat",
                                 "HEAD": {
@@ -72,7 +76,8 @@ export const lexiconData: LexiconDefinition = {
                 "MODE": "ref",
                 "INDEX": { "type": "index", "_id": "i" },
                 "RESTR": { "type": "pred-list-cons", "FIRST": { "type": "predication", "RELN": "girl", "ARG1": "#i" } },
-            }
+            },
+            "ARG-ST": { "type": "exp-list-cons", "FIRST": "#arg_spr_0", "REST": "exp-list-empty" }
         }
     ],
     "telescope": [
@@ -92,6 +97,7 @@ export const lexiconData: LexiconDefinition = {
                         "type": "exp-list-cons",
                         "FIRST": {
                             "type": "expression",
+                            "_id": "arg_spr_0",
                             "SYN": {
                                 "type": "syn-cat",
                                 "HEAD": {
@@ -111,7 +117,8 @@ export const lexiconData: LexiconDefinition = {
                 "MODE": "ref",
                 "INDEX": { "type": "index", "_id": "i" },
                 "RESTR": { "type": "pred-list-cons", "FIRST": { "type": "predication", "RELN": "telescope", "ARG1": "#i" } },
-            }
+            },
+            "ARG-ST": { "type": "exp-list-cons", "FIRST": "#arg_spr_0", "REST": "exp-list-empty" }
         }
     ],
     "letter": [
@@ -132,6 +139,7 @@ export const lexiconData: LexiconDefinition = {
                         "type": "exp-list-cons",
                         "FIRST": {
                             "type": "expression",
+                            "_id": "arg_spr_0",
                             "SYN": {
                                 "type": "syn-cat",
                                 "HEAD": {
@@ -157,7 +165,8 @@ export const lexiconData: LexiconDefinition = {
                 "MODE": "ref",
                 "INDEX": "#k",
                 "RESTR": { "type": "pred-list-cons", "FIRST": { "type": "predication", "RELN": "letter", "ARG1": "#k" }, "REST": "pred-list-empty" },
-            }
+            },
+            "ARG-ST": { "type": "exp-list-cons", "FIRST": "#arg_spr_0", "REST": "exp-list-empty" }
         },
         {
             "type": "word",
@@ -176,6 +185,7 @@ export const lexiconData: LexiconDefinition = {
                         "type": "exp-list-cons",
                         "FIRST": {
                             "type": "expression",
+                            "_id": "arg_spr_0",
                             "SYN": {
                                 "type": "syn-cat",
                                 "HEAD": {
@@ -196,6 +206,7 @@ export const lexiconData: LexiconDefinition = {
                         "type": "exp-list-cons",
                         "FIRST": {
                             "type": "phrase",
+                            "_id": "arg_comps_0",
                             "SYN": {
                                 "type": "syn-cat",
                                 "HEAD": "prep",
@@ -220,6 +231,11 @@ export const lexiconData: LexiconDefinition = {
                 "MODE": "ref",
                 "INDEX": "#k",
                 "RESTR": { "type": "pred-list-cons", "FIRST": { "type": "predication", "RELN": "letter", "ARG1": "#k", "ARG2": "#m" }, "REST": "pred-list-empty" },
+            },
+            "ARG-ST": {
+                "type": "exp-list-cons",
+                "FIRST": "#arg_spr_0",
+                "REST": { "type": "exp-list-cons", "FIRST": "#arg_comps_0", "REST": "exp-list-empty" }
             }
         },
     ],
@@ -261,7 +277,8 @@ export const lexiconData: LexiconDefinition = {
                         }
                     }
                 },
-            }
+            },
+            "ARG-ST": "exp-list-empty"
         },
     ],
     "they": [
@@ -294,7 +311,8 @@ export const lexiconData: LexiconDefinition = {
                     "FIRST": { "type": "predication", "RELN": "group", "ARG1": "#i" },
                     "REST": "pred-list-empty"
                 },
-            }
+            },
+            "ARG-ST": "exp-list-empty"
         },
     ],
     "a": [
@@ -305,7 +323,8 @@ export const lexiconData: LexiconDefinition = {
                 "HEAD": { "type": "det", "AGR": "3sing", "COUNT": "+" },
                 "VAL": { "type": "val-cat", "SPR": "exp-list-empty", "COMPS": "exp-list-empty", "MOD": "exp-list-empty" }
             },
-            "SEM": { "type": "sem-cat", "MODE": "none", "INDEX": { "type": "index", "_id": "k" }, "RESTR": { "type": "pred-list-empty" } }
+            "SEM": { "type": "sem-cat", "MODE": "none", "INDEX": { "type": "index", "_id": "k" }, "RESTR": { "type": "pred-list-empty" } },
+            "ARG-ST": "exp-list-empty"
         }
     ],
     "walks": [
@@ -320,6 +339,7 @@ export const lexiconData: LexiconDefinition = {
                         "type": "exp-list-cons",
                         "FIRST": {
                             "type": "expression",
+                            "_id": "arg_spr_0",
                             "SYN": {
                                 "type": "syn-cat",
                                 "HEAD": { "type": "noun", "CASE": "nom", "AGR": "3sing" }
@@ -340,7 +360,8 @@ export const lexiconData: LexiconDefinition = {
                 "MODE": "prop",
                 "INDEX": { "type": "index" },
                 "RESTR": { "type": "pred-list-cons", "FIRST": { "type": "predication", "RELN": "walk", "ARG1": "#i" } },
-            }
+            },
+            "ARG-ST": { "type": "exp-list-cons", "FIRST": "#arg_spr_0", "REST": "exp-list-empty" }
         }
     ],
     "sees": [
@@ -355,6 +376,7 @@ export const lexiconData: LexiconDefinition = {
                         "type": "exp-list-cons",
                         "FIRST": {
                             "type": "expression",
+                            "_id": "arg_spr_0",
                             "SYN": {
                                 "type": "syn-cat",
                                 "HEAD": { "type": "noun", "CASE": "nom", "AGR": "3sing" }
@@ -370,6 +392,7 @@ export const lexiconData: LexiconDefinition = {
                         "type": "exp-list-cons",
                         "FIRST": {
                             "type": "expression",
+                            "_id": "arg_comps_0",
                             "SYN": {
                                 "type": "syn-cat",
                                 "HEAD": { "type": "noun", "CASE": "acc" }
@@ -389,6 +412,11 @@ export const lexiconData: LexiconDefinition = {
                 "MODE": "prop",
                 "INDEX": { "type": "index" },
                 "RESTR": { "type": "pred-list-cons", "FIRST": { "type": "predication", "RELN": "see", "ARG1": "#i", "ARG2": "#j" } },
+            },
+            "ARG-ST": {
+                "type": "exp-list-cons",
+                "FIRST": "#arg_spr_0",
+                "REST": { "type": "exp-list-cons", "FIRST": "#arg_comps_0", "REST": "exp-list-empty" }
             }
         }
     ],
@@ -404,6 +432,7 @@ export const lexiconData: LexiconDefinition = {
                         "type": "exp-list-cons",
                         "FIRST": {
                             "type": "expression",
+                            "_id": "arg_spr_0",
                             "SYN": {
                                 "type": "syn-cat",
                                 "HEAD": { "type": "noun", "CASE": "nom" }
@@ -419,6 +448,7 @@ export const lexiconData: LexiconDefinition = {
                         "type": "exp-list-cons",
                         "FIRST": {
                             "type": "expression",
+                            "_id": "arg_comps_0",
                             "SYN": {
                                 "type": "syn-cat",
                                 "HEAD": { "type": "noun", "CASE": "acc" }
@@ -432,6 +462,7 @@ export const lexiconData: LexiconDefinition = {
                             "type": "exp-list-cons",
                             "FIRST": {
                                 "type": "expression",
+                                "_id": "arg_comps_1",
                                 "SYN": {
                                     "type": "syn-cat",
                                     "HEAD": { "type": "noun", "CASE": "acc" }
@@ -452,6 +483,15 @@ export const lexiconData: LexiconDefinition = {
                 "MODE": "prop",
                 "INDEX": { "type": "index", "_id": "s7" },
                 "RESTR": { "type": "pred-list-cons", "FIRST": { "type": "predication", "RELN": "send", "ARG1": "#i", "ARG2": "#j", "ARG3": "#k" } },
+            },
+            "ARG-ST": {
+                "type": "exp-list-cons",
+                "FIRST": "#arg_spr_0",
+                "REST": {
+                    "type": "exp-list-cons",
+                    "FIRST": "#arg_comps_0",
+                    "REST": { "type": "exp-list-cons", "FIRST": "#arg_comps_1", "REST": "exp-list-empty" }
+                }
             }
         }
     ],
@@ -470,6 +510,7 @@ export const lexiconData: LexiconDefinition = {
                         "type": "exp-list-cons",
                         "FIRST": {
                             "type": "expression",
+                            "_id": "arg_comps_0",
                             "SYN": {
                                 "type": "syn-cat",
                                 "HEAD": { "type": "noun", "CASE": "acc" }
@@ -503,7 +544,8 @@ export const lexiconData: LexiconDefinition = {
                 "MODE": "prop",
                 "INDEX": { "type": "index" },
                 "RESTR": { "type": "pred-list-cons", "FIRST": { "type": "predication", "RELN": "with", "ARG1": "#i", "ARG2": "#j" } },
-            }
+            },
+            "ARG-ST": { "type": "exp-list-cons", "FIRST": "#arg_comps_0", "REST": "exp-list-empty" }
         },
         {
             "type": "word",
@@ -519,6 +561,7 @@ export const lexiconData: LexiconDefinition = {
                         "type": "exp-list-cons",
                         "FIRST": {
                             "type": "expression",
+                            "_id": "arg_comps_0",
                             "SYN": {
                                 "type": "syn-cat",
                                 "HEAD": { "type": "noun", "CASE": "acc" }
@@ -548,7 +591,8 @@ export const lexiconData: LexiconDefinition = {
                 "MODE": "prop",
                 "INDEX": { "type": "index" },
                 "RESTR": { "type": "pred-list-cons", "FIRST": { "type": "predication", "RELN": "with", "ARG2": "#j" } },
-            }
+            },
+            "ARG-ST": { "type": "exp-list-cons", "FIRST": "#arg_comps_0", "REST": "exp-list-empty" }
         }
     ],
 };
