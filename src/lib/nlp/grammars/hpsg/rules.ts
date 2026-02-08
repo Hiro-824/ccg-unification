@@ -7,6 +7,10 @@ export const ruleData: RuleDefinition = {
         "type": "rule-schema",
         "MOTHER": {
             "type": "phrase",
+            "ARG-ST": {
+                "type": "exp-list",
+                "_id": "6",
+            },
             "SYN": {
                 "type": "syn-cat",
                 "HEAD": {
@@ -40,6 +44,7 @@ export const ruleData: RuleDefinition = {
         },
         "HEAD-DTR": {
             "type": "expression",
+            "ARG-ST": "#6",
             "SYN": {
                 "type": "syn-cat",
                 "HEAD": "#5",
@@ -64,6 +69,10 @@ export const ruleData: RuleDefinition = {
         "type": "rule-schema",
         "MOTHER": {
             "type": "phrase",
+            "ARG-ST": {
+                "type": "exp-list",
+                "_id": "6",
+            },
             "SYN": {
                 "type": "syn-cat",
                 "HEAD": {
@@ -98,6 +107,7 @@ export const ruleData: RuleDefinition = {
         },
         "HEAD-DTR": {
             "type": "expression",
+            "ARG-ST": "#6",
             "SYN": {
                 "type": "syn-cat",
                 "HEAD": "#5",
@@ -123,6 +133,10 @@ export const ruleData: RuleDefinition = {
         "type": "rule-schema",
         "MOTHER": {
             "type": "phrase",
+            "ARG-ST": {
+                "type": "exp-list",
+                "_id": "6",
+            },
             "SYN": {
                 "type": "syn-cat",
                 "HEAD": {
@@ -154,6 +168,7 @@ export const ruleData: RuleDefinition = {
         "HEAD-DTR": {
             "type": "expression",
             "_id": "7",
+            "ARG-ST": "#6",
             "SYN": {
                 "type": "syn-cat",
                 "HEAD": "#5",
