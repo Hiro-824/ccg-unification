@@ -33,5 +33,6 @@ assertParses("telescope with telescope");
 // binding: anaphor must have antecedent in ARG-ST
 assertParses("mary sees herself");
 assertNoParses("herself sees mary");
+assertParses("a girl sent herself a letter");
 
 console.log("OK");

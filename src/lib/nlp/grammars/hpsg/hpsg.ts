@@ -297,7 +297,7 @@ export class HPSG implements Grammar<FeatureStructure> {
                 FeatureStructure.unify(targetHead, candidateHead, this.types);
                 FeatureStructure.unify(targetNonHead, candidateNonHead, this.types);
                 this.setMotherRestrAsSum(targetMother, candidateHead, candidateNonHead);
-                this.enforceBindingTheory(targetMother);
+                if (ruleName === "head-specifier") this.enforceBindingTheory(targetMother);
                 console.log(`Rule applied: ${ruleName}`);
                 results.push({ category: targetMother, rule: ruleName });
             } catch (e) {
