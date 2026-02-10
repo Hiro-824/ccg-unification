@@ -1,10 +1,12 @@
-import { Attribute } from "./features";
+import type { Attribute, FeatureStructureInput } from "./features";
 
 export type TypeName = string;
 
 export class TypeSystem {
     private _typeHierarchy: Map<TypeName, TypeName> = new Map();
     private _appropriateness: Map<TypeName, Map<Attribute, TypeName>> = new Map();
+    private _constraints: Map<TypeName, FeatureStructureInput> = new Map();
+    private _defaults: Map<TypeName, FeatureStructureInput> = new Map();
     // TypeName(1)という型のFeatureStructureインスタンスは、
     // 素性名がAttributeで素性値がTypeName(2)であるような素性を持つことができ、
     // それ以外の素性を持つことはできない
@@ -17,6 +19,46 @@ export class TypeSystem {
     addType(type: TypeName, parentType: TypeName) {
         this._typeHierarchy.set(type, parentType);
         this._appropriateness.set(type, new Map());
+    }
+
+    setConstraint(type: TypeName, constraint: FeatureStructureInput): void {
+        this._constraints.set(type, constraint);
+    }
+
+    getConstraint(type: TypeName): FeatureStructureInput | null {
+        return this._constraints.get(type) ?? null;
+    }
+
+    setDefaults(type: TypeName, defaults: FeatureStructureInput): void {
+        this._defaults.set(type, defaults);
+    }
+
+    getDefaults(type: TypeName): FeatureStructureInput | null {
+        return this._defaults.get(type) ?? null;
+    }
+
+    getParent(type: TypeName): TypeName | null {
+        const parent = this._typeHierarchy.get(type);
+        return parent ?? null;
+    }
+
+    // Returns ["top", ..., type]. If unknown, returns [type].
+    getTypeLineage(type: TypeName): TypeName[] {
+        const lineage: TypeName[] = [];
+        let current: TypeName | undefined = type;
+        const visited = new Set<TypeName>();
+
+        while (current && !visited.has(current)) {
+            visited.add(current);
+            lineage.push(current);
+            if (current === "top") break;
+            current = this._typeHierarchy.get(current);
+        }
+
+        lineage.reverse();
+        if (lineage.length === 0) return [type];
+        if (lineage[0] !== "top" && type !== "top") return [type];
+        return lineage;
     }
 
     addFeature(type: TypeName, attribute: Attribute, range: TypeName): void {
@@ -66,7 +108,7 @@ export class TypeSystem {
         return null
     }
 
-    loadDefinition(json: Record<string, { parent: TypeName, features?: Record<Attribute, TypeName> }>): void {
+    loadDefinition(json: Record<string, { parent: TypeName, features?: Record<Attribute, TypeName>, constraint?: FeatureStructureInput, defaults?: FeatureStructureInput }>): void {
         const typeNames = Object.keys(json);
 
         // Pass 1: まず全ての型を階層に登録する
@@ -88,6 +130,13 @@ export class TypeSystem {
                     this.addFeature(typeName, attr, rangeType);
                 }
             }
+        }
+
+        // Pass 3: constraints/defaults
+        for (const typeName of typeNames) {
+            const def = json[typeName];
+            if (def.constraint !== undefined) this.setConstraint(typeName, def.constraint);
+            if (def.defaults !== undefined) this.setDefaults(typeName, def.defaults);
         }
     }
 }
