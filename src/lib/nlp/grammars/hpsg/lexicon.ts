@@ -46,6 +46,50 @@ export const lexiconData: LexiconDefinition = {
             "ARG-ST": { "type": "exp-list-cons", "FIRST": "#arg_spr_0", "REST": "exp-list-empty" }
         }
     ],
+    "girls": [
+        {
+            "type": "word",
+            "SYN": {
+                "type": "syn-cat",
+                "HEAD": {
+                    "type": "noun", "AGR": {
+                        "type": "plural",
+                        "PER": "3rd",
+                        "NUM": "pl",
+                        "_id": "1"
+                    }
+                },
+                "VAL": {
+                    "type": "val-cat",
+                    "SPR": {
+                        "type": "exp-list-cons",
+                        "FIRST": {
+                            "type": "expression",
+                            "_id": "arg_spr_0",
+                            "SYN": {
+                                "type": "syn-cat",
+                                "HEAD": {
+                                    "type": "det",
+                                    "AGR": "#1",
+                                    "COUNT": "+",
+                                }
+                            }
+                        },
+                        "REST": "exp-list-empty"
+                    },
+                    "COMPS": "exp-list-empty",
+                    "MOD": "exp-list-empty"
+                }
+            },
+            "SEM": {
+                "type": "sem-cat",
+                "MODE": "ref",
+                "INDEX": { "type": "index", "_id": "i" },
+                "RESTR": { "type": "pred-list-cons", "FIRST": { "type": "predication", "RELN": "girl", "ARG1": "#i" } },
+            },
+            "ARG-ST": { "type": "exp-list-cons", "FIRST": "#arg_spr_0", "REST": "exp-list-empty" }
+        }
+    ],
     "telescope": [
         {
             "type": "word",
@@ -55,6 +99,50 @@ export const lexiconData: LexiconDefinition = {
                     "type": "noun", "AGR": {
                         "type": "3sing",
                         "GEND": "neut",
+                        "_id": "1"
+                    }
+                },
+                "VAL": {
+                    "type": "val-cat",
+                    "SPR": {
+                        "type": "exp-list-cons",
+                        "FIRST": {
+                            "type": "expression",
+                            "_id": "arg_spr_0",
+                            "SYN": {
+                                "type": "syn-cat",
+                                "HEAD": {
+                                    "type": "det",
+                                    "AGR": "#1",
+                                    "COUNT": "+",
+                                }
+                            }
+                        },
+                        "REST": "exp-list-empty"
+                    },
+                    "COMPS": "exp-list-empty",
+                    "MOD": "exp-list-empty"
+                }
+            },
+            "SEM": {
+                "type": "sem-cat",
+                "MODE": "ref",
+                "INDEX": { "type": "index", "_id": "i" },
+                "RESTR": { "type": "pred-list-cons", "FIRST": { "type": "predication", "RELN": "telescope", "ARG1": "#i" } },
+            },
+            "ARG-ST": { "type": "exp-list-cons", "FIRST": "#arg_spr_0", "REST": "exp-list-empty" }
+        }
+    ],
+    "telescopes": [
+        {
+            "type": "word",
+            "SYN": {
+                "type": "syn-cat",
+                "HEAD": {
+                    "type": "noun", "AGR": {
+                        "type": "plural",
+                        "PER": "3rd",
+                        "NUM": "pl",
                         "_id": "1"
                     }
                 },
@@ -144,6 +232,126 @@ export const lexiconData: LexiconDefinition = {
                     "type": "noun", "AGR": {
                         "type": "3sing",
                         "GEND": "neut",
+                        "_id": "1"
+                    }
+                },
+                "VAL": {
+                    "type": "val-cat",
+                    "SPR": {
+                        "type": "exp-list-cons",
+                        "FIRST": {
+                            "type": "expression",
+                            "_id": "arg_spr_0",
+                            "SYN": {
+                                "type": "syn-cat",
+                                "HEAD": {
+                                    "type": "det",
+                                    "AGR": "#1",
+                                    "COUNT": "+",
+                                }
+                            },
+                            "SEM": {
+                                "type": "sem-cat",
+                                "MODE": "none",
+                                "INDEX": { "type": "index", "_id": "k" }
+                            }
+                        },
+                        "REST": "exp-list-empty"
+                    },
+                    "COMPS": {
+                        "type": "exp-list-cons",
+                        "FIRST": {
+                            "type": "phrase",
+                            "_id": "arg_comps_0",
+                            "SYN": {
+                                "type": "syn-cat",
+                                "HEAD": "prep",
+                                "VAL": {
+                                    "type": "val-cat",
+                                    "SPR": "exp-list-empty",
+                                    "COMPS": "exp-list-empty"
+                                }
+                            },
+                            "SEM": {
+                                "type": "sem-cat",
+                                "INDEX": { "type": "index", "_id": "m" }
+                            }
+                        },
+                        "REST": "exp-list-empty"
+                    },
+                    "MOD": "exp-list-empty"
+                }
+            },
+            "SEM": {
+                "type": "sem-cat",
+                "MODE": "ref",
+                "INDEX": "#k",
+                "RESTR": { "type": "pred-list-cons", "FIRST": { "type": "predication", "RELN": "letter", "ARG1": "#k", "ARG2": "#m" }, "REST": "pred-list-empty" },
+            },
+            "ARG-ST": {
+                "type": "exp-list-cons",
+                "FIRST": "#arg_spr_0",
+                "REST": { "type": "exp-list-cons", "FIRST": "#arg_comps_0", "REST": "exp-list-empty" }
+            }
+        },
+    ],
+    "letters": [
+        {
+            "type": "word",
+            "SYN": {
+                "type": "syn-cat",
+                "HEAD": {
+                    "type": "noun", "AGR": {
+                        "type": "plural",
+                        "PER": "3rd",
+                        "NUM": "pl",
+                        "_id": "1"
+                    }
+                },
+                "VAL": {
+                    "type": "val-cat",
+                    "SPR": {
+                        "type": "exp-list-cons",
+                        "FIRST": {
+                            "type": "expression",
+                            "_id": "arg_spr_0",
+                            "SYN": {
+                                "type": "syn-cat",
+                                "HEAD": {
+                                    "type": "det",
+                                    "AGR": "#1",
+                                    "COUNT": "+",
+                                }
+                            },
+                            "SEM": {
+                                "type": "sem-cat",
+                                "MODE": "none",
+                                "INDEX": { "type": "index", "_id": "k" }
+                            }
+                        },
+                        "REST": "exp-list-empty"
+                    },
+                    "COMPS": "exp-list-empty",
+                    "MOD": "exp-list-empty"
+                }
+            },
+            "SEM": {
+                "type": "sem-cat",
+                "MODE": "ref",
+                "INDEX": "#k",
+                "RESTR": { "type": "pred-list-cons", "FIRST": { "type": "predication", "RELN": "letter", "ARG1": "#k" }, "REST": "pred-list-empty" },
+            },
+            "ARG-ST": { "type": "exp-list-cons", "FIRST": "#arg_spr_0", "REST": "exp-list-empty" }
+        },
+        {
+            "type": "word",
+            "SYN": {
+                "type": "syn-cat",
+                "HEAD": {
+                    "type": "noun", "AGR": {
+                        "type": "plural",
+                        "PER": "3rd",
+                        "NUM": "pl",
                         "_id": "1"
                     }
                 },
