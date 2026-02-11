@@ -3,69 +3,6 @@ import { FeatureStructureInput } from "../../features/features";
 export type LexiconDefinition = Record<string, FeatureStructureInput[]>;
 
 export const lexiconData: LexiconDefinition = {
-    "kim": [
-        {
-            "type": "word",
-            "SYN": {
-                "type": "syn-cat",
-                "HEAD": { "type": "noun", "AGR": "3sing" },
-                "VAL": { "type": "val-cat", "SPR": "exp-list-empty", "COMPS": "exp-list-empty", "MOD": "exp-list-empty" }
-            },
-            "SEM": {
-                "type": "sem-cat",
-                "MODE": "ref",
-                "INDEX": { "type": "index", "_id": "i" },
-                "RESTR": { "type": "pred-list-cons", "FIRST": { "type": "predication", "RELN": "named Kim", "ARG1": "#i" } },
-            },
-            "ARG-ST": "exp-list-empty"
-        }
-    ],
-    "john": [
-        {
-            "type": "word",
-            "SYN": {
-                "type": "syn-cat",
-                "HEAD": {
-                    "type": "noun",
-                    "AGR": {
-                        "type": "3sing",
-                        "GEND": "masc"
-                    }
-                },
-                "VAL": { "type": "val-cat", "SPR": "exp-list-empty", "COMPS": "exp-list-empty", "MOD": "exp-list-empty" }
-            },
-            "SEM": {
-                "type": "sem-cat",
-                "MODE": "ref",
-                "INDEX": { "type": "index", "_id": "i" },
-                "RESTR": { "type": "pred-list-cons", "FIRST": { "type": "predication", "RELN": "named John", "ARG1": "#i" } },
-            },
-            "ARG-ST": "exp-list-empty"
-        }
-    ],
-    "mary": [
-        {
-            "type": "word",
-            "SYN": {
-                "type": "syn-cat",
-                "HEAD": {
-                    "type": "noun",
-                    "AGR": {
-                        "type": "3sing",
-                        "GEND": "fem"
-                    }
-                },
-                "VAL": { "type": "val-cat", "SPR": "exp-list-empty", "COMPS": "exp-list-empty", "MOD": "exp-list-empty" }
-            },
-            "SEM": {
-                "type": "sem-cat",
-                "MODE": "ref",
-                "INDEX": { "type": "index", "_id": "i" },
-                "RESTR": { "type": "pred-list-cons", "FIRST": { "type": "predication", "RELN": "named Mary", "ARG1": "#i" } },
-            },
-            "ARG-ST": "exp-list-empty"
-        }
-    ],
     "girl": [
         {
             "type": "word",
@@ -90,6 +27,7 @@ export const lexiconData: LexiconDefinition = {
                                 "HEAD": {
                                     "type": "det",
                                     "AGR": "#1",
+                                    "COUNT": "+",
                                 }
                             }
                         },
@@ -116,6 +54,7 @@ export const lexiconData: LexiconDefinition = {
                 "HEAD": {
                     "type": "noun", "AGR": {
                         "type": "3sing",
+                        "GEND": "neut",
                         "_id": "1"
                     }
                 },
@@ -131,6 +70,7 @@ export const lexiconData: LexiconDefinition = {
                                 "HEAD": {
                                     "type": "det",
                                     "AGR": "#1",
+                                    "COUNT": "+",
                                 }
                             }
                         },
@@ -267,93 +207,41 @@ export const lexiconData: LexiconDefinition = {
             }
         },
     ],
-    "us": [
+    "water": [
         {
             "type": "word",
             "SYN": {
                 "type": "syn-cat",
                 "HEAD": {
-                    "type": "noun",
-                    "CASE": "acc",
-                    "AGR": {
-                        "type": "plural",
-                        "PER": "1st",
-                        "NUM": "pl",
-                    }
-                },
-                "VAL": {
-                    "type": "val-cat",
-                    "SPR": "exp-list-empty",
-                    "COMPS": "exp-list-empty",
-                    "MOD": "exp-list-empty"
-                }
-            },
-            "SEM": {
-                "type": "sem-cat",
-                "MODE": "ref",
-                "INDEX": { "type": "index", "_id": "j" },
-                "RESTR": {
-                    "type": "pred-list-cons",
-                    "FIRST": { "type": "predication", "RELN": "group", "ARG1": "#j" },
-                    "REST": {
-                        "type": "pred-list-cons",
-                        "FIRST": { "type": "predication", "RELN": "speaker", "ARG1": { "type": "index", "_id": "l" } },
-                        "REST": {
-                            "type": "pred-list-cons",
-                            "FIRST": { "type": "predication", "RELN": "member", "ARG1": "#j", "ARG2": "#l" },
-                            "REST": { "type": "pred-list-empty" }
-                        }
-                    }
-                },
-            },
-            "ARG-ST": "exp-list-empty"
-        },
-    ],
-    "herself": [
-        {
-            "type": "word",
-            "SYN": {
-                "type": "syn-cat",
-                "HEAD": {
-                    "type": "noun",
-                    "AGR": {
+                    "type": "noun", "AGR": {
                         "type": "3sing",
-                        "GEND": "fem",
+                        "GEND": "neut",
+                        "_id": "1"
                     }
                 },
                 "VAL": {
                     "type": "val-cat",
-                    "SPR": "exp-list-empty",
-                    "COMPS": "exp-list-empty",
-                    "MOD": "exp-list-empty"
-                }
-            },
-            "SEM": {
-                "type": "sem-cat",
-                "MODE": "ana",
-                "INDEX": { "type": "index" },
-                "RESTR": "pred-list-empty",
-            },
-            "ARG-ST": "exp-list-empty"
-        },
-    ],
-    "they": [
-        {
-            "type": "word",
-            "SYN": {
-                "type": "syn-cat",
-                "HEAD": {
-                    "type": "noun",
-                    "CASE": "nom",
-                    "AGR": {
-                        "type": "plural",
-                        "PER": "3rd",
-                        "NUM": "pl",
-                    }
-                },
-                "VAL": {
-                    "type": "val-cat",
-                    "SPR": "exp-list-empty",
+                    "SPR": {
+                        "type": "exp-list-cons",
+                        "FIRST": {
+                            "type": "expression",
+                            "_id": "arg_spr_0",
+                            "SYN": {
+                                "type": "syn-cat",
+                                "HEAD": {
+                                    "type": "det",
+                                    "AGR": "#1",
+                                    "COUNT": "-",
+                                }
+                            },
+                            "SEM": {
+                                "type": "sem-cat",
+                                "MODE": "none",
+                                "INDEX": { "type": "index", "_id": "k" }
+                            }
+                        },
+                        "REST": "exp-list-empty"
+                    },
                     "COMPS": "exp-list-empty",
                     "MOD": "exp-list-empty"
                 }
@@ -361,26 +249,47 @@ export const lexiconData: LexiconDefinition = {
             "SEM": {
                 "type": "sem-cat",
                 "MODE": "ref",
-                "INDEX": { "type": "index", "_id": "i" },
-                "RESTR": {
-                    "type": "pred-list-cons",
-                    "FIRST": { "type": "predication", "RELN": "group", "ARG1": "#i" },
-                    "REST": "pred-list-empty"
-                },
+                "INDEX": "#k",
+                "RESTR": { "type": "pred-list-cons", "FIRST": { "type": "predication", "RELN": "water", "ARG1": "#k" }, "REST": "pred-list-empty" },
             },
-            "ARG-ST": "exp-list-empty"
+            "ARG-ST": { "type": "exp-list-cons", "FIRST": "#arg_spr_0", "REST": "exp-list-empty" }
         },
     ],
-    "a": [
+    "walk": [
         {
             "type": "word",
             "SYN": {
                 "type": "syn-cat",
-                "HEAD": { "type": "det", "AGR": "3sing", "COUNT": "+" },
-                "VAL": { "type": "val-cat", "SPR": "exp-list-empty", "COMPS": "exp-list-empty", "MOD": "exp-list-empty" }
+                "HEAD": { "type": "verb", "AUX": "-" },
+                "VAL": {
+                    "type": "val-cat",
+                    "SPR": {
+                        "type": "exp-list-cons",
+                        "FIRST": {
+                            "type": "expression",
+                            "_id": "arg_spr_0",
+                            "SYN": {
+                                "type": "syn-cat",
+                                "HEAD": { "type": "noun", "CASE": "nom", "AGR": "non-3sing" }
+                            },
+                            "SEM": {
+                                "type": "sem-cat",
+                                "INDEX": { "type": "index", "_id": "i" }
+                            }
+                        },
+                        "REST": "exp-list-empty"
+                    },
+                    "COMPS": "exp-list-empty",
+                    "MOD": "exp-list-empty"
+                }
             },
-            "SEM": { "type": "sem-cat", "MODE": "none", "INDEX": { "type": "index", "_id": "k" }, "RESTR": { "type": "pred-list-empty" } },
-            "ARG-ST": "exp-list-empty"
+            "SEM": {
+                "type": "sem-cat",
+                "MODE": "prop",
+                "INDEX": { "type": "index" },
+                "RESTR": { "type": "pred-list-cons", "FIRST": { "type": "predication", "RELN": "walk", "ARG1": "#i" } },
+            },
+            "ARG-ST": { "type": "exp-list-cons", "FIRST": "#arg_spr_0", "REST": "exp-list-empty" }
         }
     ],
     "walks": [
@@ -418,6 +327,166 @@ export const lexiconData: LexiconDefinition = {
                 "RESTR": { "type": "pred-list-cons", "FIRST": { "type": "predication", "RELN": "walk", "ARG1": "#i" } },
             },
             "ARG-ST": { "type": "exp-list-cons", "FIRST": "#arg_spr_0", "REST": "exp-list-empty" }
+        }
+    ],
+    "go": [
+        {
+            "type": "word",
+            "SYN": {
+                "type": "syn-cat",
+                "HEAD": { "type": "verb", "AUX": "-" },
+                "VAL": {
+                    "type": "val-cat",
+                    "SPR": {
+                        "type": "exp-list-cons",
+                        "FIRST": {
+                            "type": "expression",
+                            "_id": "arg_spr_0",
+                            "SYN": {
+                                "type": "syn-cat",
+                                "HEAD": { "type": "noun", "CASE": "nom", "AGR": "non-3sing" }
+                            },
+                            "SEM": {
+                                "type": "sem-cat",
+                                "INDEX": { "type": "index", "_id": "i" }
+                            }
+                        },
+                        "REST": "exp-list-empty"
+                    },
+                    "COMPS": {
+                        "type": "exp-list-cons",
+                        "FIRST": {
+                            "type": "expression",
+                            "_id": "arg_spr_0",
+                            "SYN": {
+                                "type": "syn-cat",
+                                "HEAD": { "type": "prep" }
+                            },
+                            "SEM": {
+                                "type": "sem-cat",
+                                "INDEX": { "type": "index", "_id": "i" }
+                            }
+                        },
+                        "REST": "exp-list-empty"
+                    },
+                    "MOD": "exp-list-empty"
+                }
+            },
+            "SEM": {
+                "type": "sem-cat",
+                "MODE": "prop",
+                "INDEX": { "type": "index" },
+                "RESTR": { "type": "pred-list-cons", "FIRST": { "type": "predication", "RELN": "go", "ARG1": "#i" } },
+            },
+            "ARG-ST": { "type": "exp-list-cons", "FIRST": "#arg_spr_0", "REST": "exp-list-empty" }
+        }
+    ],
+    "goes": [
+        {
+            "type": "word",
+            "SYN": {
+                "type": "syn-cat",
+                "HEAD": { "type": "verb", "AUX": "-" },
+                "VAL": {
+                    "type": "val-cat",
+                    "SPR": {
+                        "type": "exp-list-cons",
+                        "FIRST": {
+                            "type": "expression",
+                            "_id": "arg_spr_0",
+                            "SYN": {
+                                "type": "syn-cat",
+                                "HEAD": { "type": "noun", "CASE": "nom", "AGR": "3sing" }
+                            },
+                            "SEM": {
+                                "type": "sem-cat",
+                                "INDEX": { "type": "index", "_id": "i" }
+                            }
+                        },
+                        "REST": "exp-list-empty"
+                    },
+                    "COMPS": {
+                        "type": "exp-list-cons",
+                        "FIRST": {
+                            "type": "expression",
+                            "_id": "arg_spr_0",
+                            "SYN": {
+                                "type": "syn-cat",
+                                "HEAD": { "type": "prep" }
+                            },
+                            "SEM": {
+                                "type": "sem-cat",
+                                "INDEX": { "type": "index", "_id": "i" }
+                            }
+                        },
+                        "REST": "exp-list-empty"
+                    },
+                    "MOD": "exp-list-empty"
+                }
+            },
+            "SEM": {
+                "type": "sem-cat",
+                "MODE": "prop",
+                "INDEX": { "type": "index" },
+                "RESTR": { "type": "pred-list-cons", "FIRST": { "type": "predication", "RELN": "go", "ARG1": "#i" } },
+            },
+            "ARG-ST": { "type": "exp-list-cons", "FIRST": "#arg_spr_0", "REST": "exp-list-empty" }
+        }
+    ],
+    "see": [
+        {
+            "type": "word",
+            "SYN": {
+                "type": "syn-cat",
+                "HEAD": { "type": "verb", "AUX": "-" },
+                "VAL": {
+                    "type": "val-cat",
+                    "SPR": {
+                        "type": "exp-list-cons",
+                        "FIRST": {
+                            "type": "expression",
+                            "_id": "arg_spr_0",
+                            "SYN": {
+                                "type": "syn-cat",
+                                "HEAD": { "type": "noun", "CASE": "nom", "AGR": "non-3sing" }
+                            },
+                            "SEM": {
+                                "type": "sem-cat",
+                                "INDEX": { "type": "index", "_id": "i" }
+                            }
+                        },
+                        "REST": "exp-list-empty"
+                    },
+                    "COMPS": {
+                        "type": "exp-list-cons",
+                        "FIRST": {
+                            "type": "expression",
+                            "_id": "arg_comps_0",
+                            "SYN": {
+                                "type": "syn-cat",
+                                "HEAD": { "type": "noun", "CASE": "acc" }
+                            },
+                            "SEM": {
+                                "type": "sem-cat",
+                                "INDEX": { "type": "index", "_id": "j" }
+                            }
+                        },
+                        "REST": "exp-list-empty"
+                    },
+                    "MOD": "exp-list-empty"
+                }
+            },
+            "SEM": {
+                "type": "sem-cat",
+                "MODE": "prop",
+                "INDEX": { "type": "index" },
+                "RESTR": { "type": "pred-list-cons", "FIRST": { "type": "predication", "RELN": "see", "ARG1": "#i", "ARG2": "#j" } },
+            },
+            "ARG-ST": {
+                "type": "exp-list-cons",
+                "FIRST": "#arg_spr_0",
+                "REST": { "type": "exp-list-cons", "FIRST": "#arg_comps_0", "REST": "exp-list-empty" }
+            }
         }
     ],
     "sees": [
@@ -476,7 +545,7 @@ export const lexiconData: LexiconDefinition = {
             }
         }
     ],
-    "sent": [
+    "send": [
         {
             "type": "word",
             "SYN": {
@@ -491,7 +560,7 @@ export const lexiconData: LexiconDefinition = {
                             "_id": "arg_spr_0",
                             "SYN": {
                                 "type": "syn-cat",
-                                "HEAD": { "type": "noun", "CASE": "nom" }
+                                "HEAD": { "type": "noun", "CASE": "nom", "AGR": "non-3sing" }
                             },
                             "SEM": {
                                 "type": "sem-cat",
@@ -549,6 +618,1033 @@ export const lexiconData: LexiconDefinition = {
                     "REST": { "type": "exp-list-cons", "FIRST": "#arg_comps_1", "REST": "exp-list-empty" }
                 }
             }
+        },
+        {
+            "type": "word",
+            "SYN": {
+                "type": "syn-cat",
+                "HEAD": { "type": "verb", "AUX": "-" },
+                "VAL": {
+                    "type": "val-cat",
+                    "SPR": {
+                        "type": "exp-list-cons",
+                        "FIRST": {
+                            "type": "expression",
+                            "_id": "arg_spr_0",
+                            "SYN": {
+                                "type": "syn-cat",
+                                "HEAD": { "type": "noun", "CASE": "nom", "AGR": "non-3sing" }
+                            },
+                            "SEM": {
+                                "type": "sem-cat",
+                                "INDEX": { "type": "index", "_id": "i" }
+                            }
+                        },
+                        "REST": "exp-list-empty"
+                    },
+                    "COMPS": {
+                        "type": "exp-list-cons",
+                        "FIRST": {
+                            "type": "expression",
+                            "_id": "arg_comps_0",
+                            "SYN": {
+                                "type": "syn-cat",
+                                "HEAD": { "type": "noun", "CASE": "acc" }
+                            },
+                            "SEM": {
+                                "type": "sem-cat",
+                                "INDEX": { "type": "index", "_id": "k" }
+                            }
+                        },
+                        "REST": {
+                            "type": "exp-list-cons",
+                            "FIRST": {
+                                "type": "expression",
+                                "_id": "arg_comps_1",
+                                "SYN": {
+                                    "type": "syn-cat",
+                                    "HEAD": { "type": "prep" }
+                                },
+                                "SEM": {
+                                    "type": "sem-cat",
+                                    "INDEX": { "type": "index", "_id": "j" }
+                                }
+                            },
+                            "REST": "exp-list-empty"
+                        }
+                    },
+                    "MOD": "exp-list-empty"
+                }
+            },
+            "SEM": {
+                "type": "sem-cat",
+                "MODE": "prop",
+                "INDEX": { "type": "index", "_id": "s7" },
+                "RESTR": { "type": "pred-list-cons", "FIRST": { "type": "predication", "RELN": "send", "ARG1": "#i", "ARG2": "#j", "ARG3": "#k" } },
+            },
+            "ARG-ST": {
+                "type": "exp-list-cons",
+                "FIRST": "#arg_spr_0",
+                "REST": {
+                    "type": "exp-list-cons",
+                    "FIRST": "#arg_comps_0",
+                    "REST": { "type": "exp-list-cons", "FIRST": "#arg_comps_1", "REST": "exp-list-empty" }
+                }
+            }
+        }
+    ],
+    "sends": [
+        {
+            "type": "word",
+            "SYN": {
+                "type": "syn-cat",
+                "HEAD": { "type": "verb", "AUX": "-" },
+                "VAL": {
+                    "type": "val-cat",
+                    "SPR": {
+                        "type": "exp-list-cons",
+                        "FIRST": {
+                            "type": "expression",
+                            "_id": "arg_spr_0",
+                            "SYN": {
+                                "type": "syn-cat",
+                                "HEAD": { "type": "noun", "CASE": "nom", "AGR": "3sing" }
+                            },
+                            "SEM": {
+                                "type": "sem-cat",
+                                "INDEX": { "type": "index", "_id": "i" }
+                            }
+                        },
+                        "REST": "exp-list-empty"
+                    },
+                    "COMPS": {
+                        "type": "exp-list-cons",
+                        "FIRST": {
+                            "type": "expression",
+                            "_id": "arg_comps_0",
+                            "SYN": {
+                                "type": "syn-cat",
+                                "HEAD": { "type": "noun", "CASE": "acc" }
+                            },
+                            "SEM": {
+                                "type": "sem-cat",
+                                "INDEX": { "type": "index", "_id": "j" }
+                            }
+                        },
+                        "REST": {
+                            "type": "exp-list-cons",
+                            "FIRST": {
+                                "type": "expression",
+                                "_id": "arg_comps_1",
+                                "SYN": {
+                                    "type": "syn-cat",
+                                    "HEAD": { "type": "noun", "CASE": "acc" }
+                                },
+                                "SEM": {
+                                    "type": "sem-cat",
+                                    "INDEX": { "type": "index", "_id": "k" }
+                                }
+                            },
+                            "REST": "exp-list-empty"
+                        }
+                    },
+                    "MOD": "exp-list-empty"
+                }
+            },
+            "SEM": {
+                "type": "sem-cat",
+                "MODE": "prop",
+                "INDEX": { "type": "index", "_id": "s7" },
+                "RESTR": { "type": "pred-list-cons", "FIRST": { "type": "predication", "RELN": "send", "ARG1": "#i", "ARG2": "#j", "ARG3": "#k" } },
+            },
+            "ARG-ST": {
+                "type": "exp-list-cons",
+                "FIRST": "#arg_spr_0",
+                "REST": {
+                    "type": "exp-list-cons",
+                    "FIRST": "#arg_comps_0",
+                    "REST": { "type": "exp-list-cons", "FIRST": "#arg_comps_1", "REST": "exp-list-empty" }
+                }
+            }
+        },
+        {
+            "type": "word",
+            "SYN": {
+                "type": "syn-cat",
+                "HEAD": { "type": "verb", "AUX": "-" },
+                "VAL": {
+                    "type": "val-cat",
+                    "SPR": {
+                        "type": "exp-list-cons",
+                        "FIRST": {
+                            "type": "expression",
+                            "_id": "arg_spr_0",
+                            "SYN": {
+                                "type": "syn-cat",
+                                "HEAD": { "type": "noun", "CASE": "nom", "AGR": "3sing" }
+                            },
+                            "SEM": {
+                                "type": "sem-cat",
+                                "INDEX": { "type": "index", "_id": "i" }
+                            }
+                        },
+                        "REST": "exp-list-empty"
+                    },
+                    "COMPS": {
+                        "type": "exp-list-cons",
+                        "FIRST": {
+                            "type": "expression",
+                            "_id": "arg_comps_0",
+                            "SYN": {
+                                "type": "syn-cat",
+                                "HEAD": { "type": "noun", "CASE": "acc" }
+                            },
+                            "SEM": {
+                                "type": "sem-cat",
+                                "INDEX": { "type": "index", "_id": "k" }
+                            }
+                        },
+                        "REST": {
+                            "type": "exp-list-cons",
+                            "FIRST": {
+                                "type": "expression",
+                                "_id": "arg_comps_1",
+                                "SYN": {
+                                    "type": "syn-cat",
+                                    "HEAD": { "type": "prep" }
+                                },
+                                "SEM": {
+                                    "type": "sem-cat",
+                                    "INDEX": { "type": "index", "_id": "j" }
+                                }
+                            },
+                            "REST": "exp-list-empty"
+                        }
+                    },
+                    "MOD": "exp-list-empty"
+                }
+            },
+            "SEM": {
+                "type": "sem-cat",
+                "MODE": "prop",
+                "INDEX": { "type": "index", "_id": "s7" },
+                "RESTR": { "type": "pred-list-cons", "FIRST": { "type": "predication", "RELN": "send", "ARG1": "#i", "ARG2": "#j", "ARG3": "#k" } },
+            },
+            "ARG-ST": {
+                "type": "exp-list-cons",
+                "FIRST": "#arg_spr_0",
+                "REST": {
+                    "type": "exp-list-cons",
+                    "FIRST": "#arg_comps_0",
+                    "REST": { "type": "exp-list-cons", "FIRST": "#arg_comps_1", "REST": "exp-list-empty" }
+                }
+            }
+        }
+    ],
+    "kim": [
+        {
+            "type": "word",
+            "SYN": {
+                "type": "syn-cat",
+                "HEAD": { "type": "noun", "AGR": "3sing" },
+                "VAL": { "type": "val-cat", "SPR": "exp-list-empty", "COMPS": "exp-list-empty", "MOD": "exp-list-empty" }
+            },
+            "SEM": {
+                "type": "sem-cat",
+                "MODE": "ref",
+                "INDEX": { "type": "index", "_id": "i" },
+                "RESTR": { "type": "pred-list-cons", "FIRST": { "type": "predication", "RELN": "named Kim", "ARG1": "#i" } },
+            },
+            "ARG-ST": "exp-list-empty"
+        }
+    ],
+    "john": [
+        {
+            "type": "word",
+            "SYN": {
+                "type": "syn-cat",
+                "HEAD": {
+                    "type": "noun",
+                    "AGR": {
+                        "type": "3sing",
+                        "GEND": "masc"
+                    }
+                },
+                "VAL": { "type": "val-cat", "SPR": "exp-list-empty", "COMPS": "exp-list-empty", "MOD": "exp-list-empty" }
+            },
+            "SEM": {
+                "type": "sem-cat",
+                "MODE": "ref",
+                "INDEX": { "type": "index", "_id": "i" },
+                "RESTR": { "type": "pred-list-cons", "FIRST": { "type": "predication", "RELN": "named John", "ARG1": "#i" } },
+            },
+            "ARG-ST": "exp-list-empty"
+        }
+    ],
+    "mary": [
+        {
+            "type": "word",
+            "SYN": {
+                "type": "syn-cat",
+                "HEAD": {
+                    "type": "noun",
+                    "AGR": {
+                        "type": "3sing",
+                        "GEND": "fem"
+                    }
+                },
+                "VAL": { "type": "val-cat", "SPR": "exp-list-empty", "COMPS": "exp-list-empty", "MOD": "exp-list-empty" }
+            },
+            "SEM": {
+                "type": "sem-cat",
+                "MODE": "ref",
+                "INDEX": { "type": "index", "_id": "i" },
+                "RESTR": { "type": "pred-list-cons", "FIRST": { "type": "predication", "RELN": "named Mary", "ARG1": "#i" } },
+            },
+            "ARG-ST": "exp-list-empty"
+        }
+    ],
+    "i": [
+        {
+            "type": "word",
+            "SYN": {
+                "type": "syn-cat",
+                "HEAD": {
+                    "type": "noun",
+                    "CASE": "nom",
+                    "AGR": {
+                        "type": "1sing",
+                        "PER": "1st",
+                        "NUM": "sg",
+                    }
+                },
+                "VAL": {
+                    "type": "val-cat",
+                    "SPR": "exp-list-empty",
+                    "COMPS": "exp-list-empty",
+                    "MOD": "exp-list-empty"
+                }
+            },
+            "SEM": {
+                "type": "sem-cat",
+                "MODE": "ref",
+                "INDEX": { "type": "index", "_id": "i" },
+                "RESTR": {
+                    "type": "pred-list-cons",
+                    "FIRST": { "type": "predication", "RELN": "speaker", "ARG1": "#i" },
+                    "REST": "pred-list-empty"
+                },
+            },
+            "ARG-ST": "exp-list-empty"
+        },
+    ],
+    "me": [
+        {
+            "type": "word",
+            "SYN": {
+                "type": "syn-cat",
+                "HEAD": {
+                    "type": "noun",
+                    "CASE": "acc",
+                    "AGR": {
+                        "type": "1sing",
+                        "PER": "1st",
+                        "NUM": "sg",
+                    }
+                },
+                "VAL": {
+                    "type": "val-cat",
+                    "SPR": "exp-list-empty",
+                    "COMPS": "exp-list-empty",
+                    "MOD": "exp-list-empty"
+                }
+            },
+            "SEM": {
+                "type": "sem-cat",
+                "MODE": "ref",
+                "INDEX": { "type": "index", "_id": "i" },
+                "RESTR": {
+                    "type": "pred-list-cons",
+                    "FIRST": { "type": "predication", "RELN": "speaker", "ARG1": "#i" },
+                    "REST": "pred-list-empty"
+                },
+            },
+            "ARG-ST": "exp-list-empty"
+        },
+    ],
+    "you": [
+        {
+            "type": "word",
+            "SYN": {
+                "type": "syn-cat",
+                "HEAD": {
+                    "type": "noun",
+                    "CASE": "nom",
+                    "AGR": {
+                        "type": "agr-cat",
+                        "PER": "2nd",
+                    }
+                },
+                "VAL": {
+                    "type": "val-cat",
+                    "SPR": "exp-list-empty",
+                    "COMPS": "exp-list-empty",
+                    "MOD": "exp-list-empty"
+                }
+            },
+            "SEM": {
+                "type": "sem-cat",
+                "MODE": "ref",
+                "INDEX": { "type": "index", "_id": "i" },
+                "RESTR": {
+                    "type": "pred-list-cons",
+                    "FIRST": { "type": "predication", "RELN": "addressee", "ARG1": "#i" },
+                    "REST": "pred-list-empty"
+                },
+            },
+            "ARG-ST": "exp-list-empty"
+        },
+        {
+            "type": "word",
+            "SYN": {
+                "type": "syn-cat",
+                "HEAD": {
+                    "type": "noun",
+                    "CASE": "acc",
+                    "AGR": {
+                        "type": "agr-cat",
+                        "PER": "2nd",
+                    }
+                },
+                "VAL": {
+                    "type": "val-cat",
+                    "SPR": "exp-list-empty",
+                    "COMPS": "exp-list-empty",
+                    "MOD": "exp-list-empty"
+                }
+            },
+            "SEM": {
+                "type": "sem-cat",
+                "MODE": "ref",
+                "INDEX": { "type": "index", "_id": "i" },
+                "RESTR": {
+                    "type": "pred-list-cons",
+                    "FIRST": { "type": "predication", "RELN": "addressee", "ARG1": "#i" },
+                    "REST": "pred-list-empty"
+                },
+            },
+            "ARG-ST": "exp-list-empty"
+        },
+    ],
+    "we": [
+        {
+            "type": "word",
+            "SYN": {
+                "type": "syn-cat",
+                "HEAD": {
+                    "type": "noun",
+                    "CASE": "nom",
+                    "AGR": {
+                        "type": "plural",
+                        "PER": "1st",
+                        "NUM": "pl",
+                    }
+                },
+                "VAL": {
+                    "type": "val-cat",
+                    "SPR": "exp-list-empty",
+                    "COMPS": "exp-list-empty",
+                    "MOD": "exp-list-empty"
+                }
+            },
+            "SEM": {
+                "type": "sem-cat",
+                "MODE": "ref",
+                "INDEX": { "type": "index", "_id": "j" },
+                "RESTR": {
+                    "type": "pred-list-cons",
+                    "FIRST": { "type": "predication", "RELN": "group", "ARG1": "#j" },
+                    "REST": {
+                        "type": "pred-list-cons",
+                        "FIRST": { "type": "predication", "RELN": "speaker", "ARG1": { "type": "index", "_id": "l" } },
+                        "REST": {
+                            "type": "pred-list-cons",
+                            "FIRST": { "type": "predication", "RELN": "member", "ARG1": "#j", "ARG2": "#l" },
+                            "REST": { "type": "pred-list-empty" }
+                        }
+                    }
+                },
+            },
+            "ARG-ST": "exp-list-empty"
+        },
+    ],
+    "he": [
+        {
+            "type": "word",
+            "SYN": {
+                "type": "syn-cat",
+                "HEAD": {
+                    "type": "noun",
+                    "CASE": "nom",
+                    "AGR": {
+                        "type": "3sing",
+                        "GEND": "masc",
+                        "PER": "3rd",
+                        "NUM": "sg",
+                    }
+                },
+                "VAL": {
+                    "type": "val-cat",
+                    "SPR": "exp-list-empty",
+                    "COMPS": "exp-list-empty",
+                    "MOD": "exp-list-empty"
+                }
+            },
+            "SEM": {
+                "type": "sem-cat",
+                "MODE": "ref",
+                "INDEX": { "type": "index", "_id": "i" },
+                "RESTR": {
+                    "type": "pred-list-cons",
+                    "FIRST": { "type": "predication", "RELN": "male", "ARG1": "#i" },
+                    "REST": "pred-list-empty"
+                },
+            },
+            "ARG-ST": "exp-list-empty"
+        },
+    ],
+    "him": [
+        {
+            "type": "word",
+            "SYN": {
+                "type": "syn-cat",
+                "HEAD": {
+                    "type": "noun",
+                    "CASE": "acc",
+                    "AGR": {
+                        "type": "3sing",
+                        "GEND": "masc",
+                        "PER": "3rd",
+                        "NUM": "sg",
+                    }
+                },
+                "VAL": {
+                    "type": "val-cat",
+                    "SPR": "exp-list-empty",
+                    "COMPS": "exp-list-empty",
+                    "MOD": "exp-list-empty"
+                }
+            },
+            "SEM": {
+                "type": "sem-cat",
+                "MODE": "ref",
+                "INDEX": { "type": "index", "_id": "i" },
+                "RESTR": {
+                    "type": "pred-list-cons",
+                    "FIRST": { "type": "predication", "RELN": "male", "ARG1": "#i" },
+                    "REST": "pred-list-empty"
+                },
+            },
+            "ARG-ST": "exp-list-empty"
+        },
+    ],
+    "her": [
+        {
+            "type": "word",
+            "SYN": {
+                "type": "syn-cat",
+                "HEAD": {
+                    "type": "noun",
+                    "CASE": "acc",
+                    "AGR": {
+                        "type": "3sing",
+                        "GEND": "fem",
+                        "PER": "3rd",
+                        "NUM": "sg",
+                    }
+                },
+                "VAL": {
+                    "type": "val-cat",
+                    "SPR": "exp-list-empty",
+                    "COMPS": "exp-list-empty",
+                    "MOD": "exp-list-empty"
+                }
+            },
+            "SEM": {
+                "type": "sem-cat",
+                "MODE": "ref",
+                "INDEX": { "type": "index", "_id": "i" },
+                "RESTR": {
+                    "type": "pred-list-cons",
+                    "FIRST": { "type": "predication", "RELN": "female", "ARG1": "#i" },
+                    "REST": "pred-list-empty"
+                },
+            },
+            "ARG-ST": "exp-list-empty"
+        },
+    ],
+    "it": [
+        {
+            "type": "word",
+            "SYN": {
+                "type": "syn-cat",
+                "HEAD": {
+                    "type": "noun",
+                    "CASE": "nom",
+                    "AGR": {
+                        "type": "3sing",
+                        "GEND": "neut",
+                        "PER": "3rd",
+                        "NUM": "sg",
+                    }
+                },
+                "VAL": {
+                    "type": "val-cat",
+                    "SPR": "exp-list-empty",
+                    "COMPS": "exp-list-empty",
+                    "MOD": "exp-list-empty"
+                }
+            },
+            "SEM": {
+                "type": "sem-cat",
+                "MODE": "ref",
+                "INDEX": { "type": "index", "_id": "i" },
+                "RESTR": {
+                    "type": "pred-list-cons",
+                    "FIRST": { "type": "predication", "RELN": "thing", "ARG1": "#i" },
+                    "REST": "pred-list-empty"
+                },
+            },
+            "ARG-ST": "exp-list-empty"
+        },
+        {
+            "type": "word",
+            "SYN": {
+                "type": "syn-cat",
+                "HEAD": {
+                    "type": "noun",
+                    "CASE": "acc",
+                    "AGR": {
+                        "type": "3sing",
+                        "GEND": "neut",
+                        "PER": "3rd",
+                        "NUM": "sg",
+                    }
+                },
+                "VAL": {
+                    "type": "val-cat",
+                    "SPR": "exp-list-empty",
+                    "COMPS": "exp-list-empty",
+                    "MOD": "exp-list-empty"
+                }
+            },
+            "SEM": {
+                "type": "sem-cat",
+                "MODE": "ref",
+                "INDEX": { "type": "index", "_id": "i" },
+                "RESTR": {
+                    "type": "pred-list-cons",
+                    "FIRST": { "type": "predication", "RELN": "thing", "ARG1": "#i" },
+                    "REST": "pred-list-empty"
+                },
+            },
+            "ARG-ST": "exp-list-empty"
+        },
+    ],
+    "she": [
+        {
+            "type": "word",
+            "SYN": {
+                "type": "syn-cat",
+                "HEAD": {
+                    "type": "noun",
+                    "CASE": "nom",
+                    "AGR": {
+                        "type": "3sing",
+                        "PER": "3rd",
+                        "NUM": "sg",
+                    }
+                },
+                "VAL": {
+                    "type": "val-cat",
+                    "SPR": "exp-list-empty",
+                    "COMPS": "exp-list-empty",
+                    "MOD": "exp-list-empty"
+                }
+            },
+            "SEM": {
+                "type": "sem-cat",
+                "MODE": "ref",
+                "INDEX": { "type": "index", "_id": "i" },
+                "RESTR": {
+                    "type": "pred-list-cons",
+                    "FIRST": { "type": "predication", "RELN": "female", "ARG1": "#i" },
+                    "REST": "pred-list-empty"
+                },
+            },
+            "ARG-ST": "exp-list-empty"
+        },
+    ],
+    "they": [
+        {
+            "type": "word",
+            "SYN": {
+                "type": "syn-cat",
+                "HEAD": {
+                    "type": "noun",
+                    "CASE": "nom",
+                    "AGR": {
+                        "type": "plural",
+                        "PER": "3rd",
+                        "NUM": "pl",
+                    }
+                },
+                "VAL": {
+                    "type": "val-cat",
+                    "SPR": "exp-list-empty",
+                    "COMPS": "exp-list-empty",
+                    "MOD": "exp-list-empty"
+                }
+            },
+            "SEM": {
+                "type": "sem-cat",
+                "MODE": "ref",
+                "INDEX": { "type": "index", "_id": "i" },
+                "RESTR": {
+                    "type": "pred-list-cons",
+                    "FIRST": { "type": "predication", "RELN": "group", "ARG1": "#i" },
+                    "REST": "pred-list-empty"
+                },
+            },
+            "ARG-ST": "exp-list-empty"
+        },
+    ],
+    "them": [
+        {
+            "type": "word",
+            "SYN": {
+                "type": "syn-cat",
+                "HEAD": {
+                    "type": "noun",
+                    "CASE": "acc",
+                    "AGR": {
+                        "type": "plural",
+                        "PER": "3rd",
+                        "NUM": "pl",
+                    }
+                },
+                "VAL": {
+                    "type": "val-cat",
+                    "SPR": "exp-list-empty",
+                    "COMPS": "exp-list-empty",
+                    "MOD": "exp-list-empty"
+                }
+            },
+            "SEM": {
+                "type": "sem-cat",
+                "MODE": "ref",
+                "INDEX": { "type": "index", "_id": "i" },
+                "RESTR": {
+                    "type": "pred-list-cons",
+                    "FIRST": { "type": "predication", "RELN": "group", "ARG1": "#i" },
+                    "REST": "pred-list-empty"
+                },
+            },
+            "ARG-ST": "exp-list-empty"
+        },
+    ],
+    "us": [
+        {
+            "type": "word",
+            "SYN": {
+                "type": "syn-cat",
+                "HEAD": {
+                    "type": "noun",
+                    "CASE": "acc",
+                    "AGR": {
+                        "type": "plural",
+                        "PER": "1st",
+                        "NUM": "pl",
+                    }
+                },
+                "VAL": {
+                    "type": "val-cat",
+                    "SPR": "exp-list-empty",
+                    "COMPS": "exp-list-empty",
+                    "MOD": "exp-list-empty"
+                }
+            },
+            "SEM": {
+                "type": "sem-cat",
+                "MODE": "ref",
+                "INDEX": { "type": "index", "_id": "j" },
+                "RESTR": {
+                    "type": "pred-list-cons",
+                    "FIRST": { "type": "predication", "RELN": "group", "ARG1": "#j" },
+                    "REST": {
+                        "type": "pred-list-cons",
+                        "FIRST": { "type": "predication", "RELN": "speaker", "ARG1": { "type": "index", "_id": "l" } },
+                        "REST": {
+                            "type": "pred-list-cons",
+                            "FIRST": { "type": "predication", "RELN": "member", "ARG1": "#j", "ARG2": "#l" },
+                            "REST": { "type": "pred-list-empty" }
+                        }
+                    }
+                },
+            },
+            "ARG-ST": "exp-list-empty"
+        },
+    ],
+    "myself": [
+        {
+            "type": "word",
+            "SYN": {
+                "type": "syn-cat",
+                "HEAD": {
+                    "type": "noun",
+                    "AGR": {
+                        "type": "1sing",
+                        "PER": "1st",
+                        "NUM": "sg",
+                    }
+                },
+                "VAL": {
+                    "type": "val-cat",
+                    "SPR": "exp-list-empty",
+                    "COMPS": "exp-list-empty",
+                    "MOD": "exp-list-empty"
+                }
+            },
+            "SEM": {
+                "type": "sem-cat",
+                "MODE": "ana",
+                "INDEX": { "type": "index" },
+                "RESTR": "pred-list-empty",
+            },
+            "ARG-ST": "exp-list-empty"
+        },
+    ],
+    "yourself": [
+        {
+            "type": "word",
+            "SYN": {
+                "type": "syn-cat",
+                "HEAD": {
+                    "type": "noun",
+                    "AGR": {
+                        "type": "agr-cat",
+                        "PER": "2nd",
+                    }
+                },
+                "VAL": {
+                    "type": "val-cat",
+                    "SPR": "exp-list-empty",
+                    "COMPS": "exp-list-empty",
+                    "MOD": "exp-list-empty"
+                }
+            },
+            "SEM": {
+                "type": "sem-cat",
+                "MODE": "ana",
+                "INDEX": { "type": "index" },
+                "RESTR": "pred-list-empty",
+            },
+            "ARG-ST": "exp-list-empty"
+        },
+    ],
+    "himself": [
+        {
+            "type": "word",
+            "SYN": {
+                "type": "syn-cat",
+                "HEAD": {
+                    "type": "noun",
+                    "AGR": {
+                        "type": "3sing",
+                        "GEND": "masc",
+                    }
+                },
+                "VAL": {
+                    "type": "val-cat",
+                    "SPR": "exp-list-empty",
+                    "COMPS": "exp-list-empty",
+                    "MOD": "exp-list-empty"
+                }
+            },
+            "SEM": {
+                "type": "sem-cat",
+                "MODE": "ana",
+                "INDEX": { "type": "index" },
+                "RESTR": "pred-list-empty",
+            },
+            "ARG-ST": "exp-list-empty"
+        },
+    ],
+    "herself": [
+        {
+            "type": "word",
+            "SYN": {
+                "type": "syn-cat",
+                "HEAD": {
+                    "type": "noun",
+                    "AGR": {
+                        "type": "3sing",
+                        "GEND": "fem",
+                    }
+                },
+                "VAL": {
+                    "type": "val-cat",
+                    "SPR": "exp-list-empty",
+                    "COMPS": "exp-list-empty",
+                    "MOD": "exp-list-empty"
+                }
+            },
+            "SEM": {
+                "type": "sem-cat",
+                "MODE": "ana",
+                "INDEX": { "type": "index" },
+                "RESTR": "pred-list-empty",
+            },
+            "ARG-ST": "exp-list-empty"
+        },
+    ],
+    "itself": [
+        {
+            "type": "word",
+            "SYN": {
+                "type": "syn-cat",
+                "HEAD": {
+                    "type": "noun",
+                    "AGR": {
+                        "type": "3sing",
+                        "GEND": "neut",
+                    }
+                },
+                "VAL": {
+                    "type": "val-cat",
+                    "SPR": "exp-list-empty",
+                    "COMPS": "exp-list-empty",
+                    "MOD": "exp-list-empty"
+                }
+            },
+            "SEM": {
+                "type": "sem-cat",
+                "MODE": "ana",
+                "INDEX": { "type": "index" },
+                "RESTR": "pred-list-empty",
+            },
+            "ARG-ST": "exp-list-empty"
+        },
+    ],
+    "ourselves": [
+        {
+            "type": "word",
+            "SYN": {
+                "type": "syn-cat",
+                "HEAD": {
+                    "type": "noun",
+                    "AGR": {
+                        "type": "plural",
+                        "PER": "1st",
+                        "NUM": "pl",
+                    }
+                },
+                "VAL": {
+                    "type": "val-cat",
+                    "SPR": "exp-list-empty",
+                    "COMPS": "exp-list-empty",
+                    "MOD": "exp-list-empty"
+                }
+            },
+            "SEM": {
+                "type": "sem-cat",
+                "MODE": "ana",
+                "INDEX": { "type": "index" },
+                "RESTR": "pred-list-empty",
+            },
+            "ARG-ST": "exp-list-empty"
+        },
+    ],
+    "yourselves": [
+        {
+            "type": "word",
+            "SYN": {
+                "type": "syn-cat",
+                "HEAD": {
+                    "type": "noun",
+                    "AGR": {
+                        "type": "agr-cat",
+                        "PER": "2nd",
+                        "NUM": "pl",
+                    }
+                },
+                "VAL": {
+                    "type": "val-cat",
+                    "SPR": "exp-list-empty",
+                    "COMPS": "exp-list-empty",
+                    "MOD": "exp-list-empty"
+                }
+            },
+            "SEM": {
+                "type": "sem-cat",
+                "MODE": "ana",
+                "INDEX": { "type": "index" },
+                "RESTR": "pred-list-empty",
+            },
+            "ARG-ST": "exp-list-empty"
+        },
+    ],
+    "themselves": [
+        {
+            "type": "word",
+            "SYN": {
+                "type": "syn-cat",
+                "HEAD": {
+                    "type": "noun",
+                    "AGR": {
+                        "type": "plural",
+                        "PER": "3rd",
+                        "NUM": "pl",
+                    }
+                },
+                "VAL": {
+                    "type": "val-cat",
+                    "SPR": "exp-list-empty",
+                    "COMPS": "exp-list-empty",
+                    "MOD": "exp-list-empty"
+                }
+            },
+            "SEM": {
+                "type": "sem-cat",
+                "MODE": "ana",
+                "INDEX": { "type": "index" },
+                "RESTR": "pred-list-empty",
+            },
+            "ARG-ST": "exp-list-empty"
+        },
+    ],
+    "a": [
+        {
+            "type": "word",
+            "SYN": {
+                "type": "syn-cat",
+                "HEAD": { "type": "det", "AGR": "3sing", "COUNT": "+" },
+                "VAL": { "type": "val-cat", "SPR": "exp-list-empty", "COMPS": "exp-list-empty", "MOD": "exp-list-empty" }
+            },
+            "SEM": { "type": "sem-cat", "MODE": "none", "INDEX": { "type": "index", "_id": "i" }, "RESTR": { "type": "pred-list-cons", "FIRST":  { "type": "predication", "RELN": "the", "ARG1": "#i", }, "REST": "pred-list-empty" } },
+            "ARG-ST": "exp-list-empty"
+        }
+    ],
+    "the": [
+        {
+            "type": "word",
+            "SYN": {
+                "type": "syn-cat",
+                "HEAD": { "type": "det", "AGR": "3sing", "COUNT": "+" },
+                "VAL": { "type": "val-cat", "SPR": "exp-list-empty", "COMPS": "exp-list-empty", "MOD": "exp-list-empty" }
+            },
+            "SEM": { "type": "sem-cat", "MODE": "none", "INDEX": { "type": "index", "_id": "i" }, "RESTR": { "type": "pred-list-cons", "FIRST":  { "type": "predication", "RELN": "the", "ARG1": "#i", }, "REST": "pred-list-empty" } },
+            "ARG-ST": "exp-list-empty"
         }
     ],
     "with": [
