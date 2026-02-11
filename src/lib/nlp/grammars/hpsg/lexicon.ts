@@ -1262,6 +1262,7 @@ export const lexiconData: LexiconDefinition = {
                     "AGR": {
                         "type": "3sing",
                         "PER": "3rd",
+                        "GEND": "fem",
                         "NUM": "sg",
                     }
                 },
@@ -1631,7 +1632,7 @@ export const lexiconData: LexiconDefinition = {
                 "HEAD": { "type": "det", "AGR": "3sing", "COUNT": "+" },
                 "VAL": { "type": "val-cat", "SPR": "exp-list-empty", "COMPS": "exp-list-empty", "MOD": "exp-list-empty" }
             },
-            "SEM": { "type": "sem-cat", "MODE": "none", "INDEX": { "type": "index", "_id": "i" }, "RESTR": { "type": "pred-list-cons", "FIRST":  { "type": "predication", "RELN": "the", "ARG1": "#i", }, "REST": "pred-list-empty" } },
+            "SEM": { "type": "sem-cat", "MODE": "none", "INDEX": { "type": "index", "_id": "i" }, "RESTR": { "type": "pred-list-cons", "FIRST":  { "type": "predication", "RELN": "exists", "ARG1": "#i", }, "REST": "pred-list-empty" } },
             "ARG-ST": "exp-list-empty"
         }
     ],
@@ -1640,7 +1641,7 @@ export const lexiconData: LexiconDefinition = {
             "type": "word",
             "SYN": {
                 "type": "syn-cat",
-                "HEAD": { "type": "det", "AGR": "3sing", "COUNT": "+" },
+                "HEAD": { "type": "det" },
                 "VAL": { "type": "val-cat", "SPR": "exp-list-empty", "COMPS": "exp-list-empty", "MOD": "exp-list-empty" }
             },
             "SEM": { "type": "sem-cat", "MODE": "none", "INDEX": { "type": "index", "_id": "i" }, "RESTR": { "type": "pred-list-cons", "FIRST":  { "type": "predication", "RELN": "the", "ARG1": "#i", }, "REST": "pred-list-empty" } },
