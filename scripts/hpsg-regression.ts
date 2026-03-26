@@ -24,14 +24,20 @@ assertNoParses("sees a");
 
 // sanity checks: core grammar should still build expected constituents
 assertParses("kim walks");
+assertParses("she walked");
 assertParses("a telescope");
 assertParses("with telescope");
+assertParses("to mary");
+assertParses("in telescope");
 
 // modifier should still work when lexicon licenses it ("with" has MOD)
 assertParses("telescope with telescope");
+assertParses("kim went to mary");
+assertParses("mary sent a letter to john");
 
 // binding: anaphor must have antecedent in ARG-ST
 assertParses("mary sees herself");
+assertParses("mary saw herself");
 assertNoParses("herself sees mary");
 assertParses("a girl sent herself a letter");
 

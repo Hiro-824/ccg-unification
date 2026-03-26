@@ -1,8 +1,8 @@
-import { FeatureStructureInput } from "../../features/features";
+import { FeatureStructureAVM, FeatureStructureInput } from "../../features/features";
 
 export type LexiconDefinition = Record<string, FeatureStructureInput[]>;
 
-export const lexiconData: LexiconDefinition = {
+const baseLexiconData: LexiconDefinition = {
     "girl": [
         {
             "type": "word",
@@ -1957,3 +1957,208 @@ export const lexiconData: LexiconDefinition = {
         },
     ],
 };
+
+const PAST_TENSE_FORMS: Record<string, string> = {
+    "walk": "walked",
+    "walks": "walked",
+    "go": "went",
+    "goes": "went",
+    "see": "saw",
+    "sees": "saw",
+    "send": "sent",
+    "sends": "sent",
+};
+
+const GENERIC_PREPOSITIONS = [
+    "to",
+    "in",
+    "on",
+    "at",
+    "from",
+    "for",
+    "by",
+    "under",
+    "over",
+];
+
+function asRecord(value: unknown): Record<string, unknown> | null {
+    if (typeof value !== "object" || value === null) {
+        return null;
+    }
+    return value as Record<string, unknown>;
+}
+
+function cloneEntry<T extends FeatureStructureInput>(entry: T): T {
+    return JSON.parse(JSON.stringify(entry)) as T;
+}
+
+function isVerbEntry(entry: FeatureStructureInput): entry is FeatureStructureAVM {
+    const syn = asRecord(asRecord(entry)?.SYN);
+    const head = asRecord(syn?.HEAD);
+    return head?.type === "verb";
+}
+
+function normalizePastTenseVerbEntry(entry: FeatureStructureAVM): FeatureStructureAVM {
+    const clone = cloneEntry(entry);
+    const spr = asRecord(asRecord(asRecord(clone.SYN)?.VAL)?.SPR);
+    const subject = asRecord(spr?.FIRST);
+    const subjectHead = asRecord(asRecord(subject?.SYN)?.HEAD);
+
+    if (subjectHead?.type === "noun") {
+        subjectHead.AGR = "agr-cat";
+    }
+
+    return clone;
+}
+
+function buildPrepositionEntries(word: string): FeatureStructureInput[] {
+    return [
+        {
+            "type": "word",
+            "SYN": {
+                "type": "syn-cat",
+                "HEAD": { "type": "prep" },
+                "VAL": {
+                    "type": "val-cat",
+                    "SPR": "exp-list-empty",
+                    "COMPS": {
+                        "type": "exp-list-cons",
+                        "FIRST": {
+                            "type": "expression",
+                            "_id": "arg_comps_0",
+                            "SYN": {
+                                "type": "syn-cat",
+                                "HEAD": { "type": "noun", "CASE": "acc" }
+                            },
+                            "SEM": {
+                                "type": "sem-cat",
+                                "INDEX": { "type": "index", "_id": "j" }
+                            }
+                        },
+                        "REST": "exp-list-empty"
+                    },
+                    "MOD": {
+                        "type": "exp-list-cons",
+                        "FIRST": {
+                            "type": "expression",
+                            "SYN": {
+                                "type": "syn-cat",
+                                "HEAD": { "type": "noun" }
+                            },
+                            "SEM": {
+                                "type": "sem-cat",
+                                "INDEX": { "type": "index", "_id": "i" }
+                            }
+                        },
+                        "REST": "exp-list-empty"
+                    }
+                }
+            },
+            "SEM": {
+                "type": "sem-cat",
+                "MODE": "prop",
+                "INDEX": { "type": "index" },
+                "RESTR": { "type": "pred-list-cons", "FIRST": { "type": "predication", "RELN": word, "ARG1": "#i", "ARG2": "#j" } },
+            },
+            "ARG-ST": { "type": "exp-list-cons", "FIRST": "#arg_comps_0", "REST": "exp-list-empty" }
+        },
+        {
+            "type": "word",
+            "SYN": {
+                "type": "syn-cat",
+                "HEAD": { "type": "prep" },
+                "VAL": {
+                    "type": "val-cat",
+                    "SPR": "exp-list-empty",
+                    "COMPS": {
+                        "type": "exp-list-cons",
+                        "FIRST": {
+                            "type": "expression",
+                            "_id": "arg_comps_0",
+                            "SYN": {
+                                "type": "syn-cat",
+                                "HEAD": { "type": "noun", "CASE": "acc" }
+                            },
+                            "SEM": {
+                                "type": "sem-cat",
+                                "INDEX": { "type": "index", "_id": "j" }
+                            }
+                        },
+                        "REST": "exp-list-empty"
+                    },
+                    "MOD": {
+                        "type": "exp-list-cons",
+                        "FIRST": {
+                            "type": "expression",
+                            "SYN": {
+                                "type": "syn-cat",
+                                "HEAD": { "type": "verb" }
+                            }
+                        },
+                        "REST": "exp-list-empty"
+                    }
+                }
+            },
+            "SEM": {
+                "type": "sem-cat",
+                "MODE": "prop",
+                "INDEX": { "type": "index" },
+                "RESTR": { "type": "pred-list-cons", "FIRST": { "type": "predication", "RELN": word, "ARG2": "#j" } },
+            },
+            "ARG-ST": { "type": "exp-list-cons", "FIRST": "#arg_comps_0", "REST": "exp-list-empty" }
+        },
+    ];
+}
+
+function dedupeEntries(entries: FeatureStructureInput[]): FeatureStructureInput[] {
+    const seen = new Set<string>();
+    const deduped: FeatureStructureInput[] = [];
+
+    for (const entry of entries) {
+        const key = JSON.stringify(entry);
+        if (seen.has(key)) {
+            continue;
+        }
+        seen.add(key);
+        deduped.push(entry);
+    }
+
+    return deduped;
+}
+
+function augmentLexicon(definition: LexiconDefinition): LexiconDefinition {
+    const augmented: LexiconDefinition = Object.fromEntries(
+        Object.entries(definition).map(([word, entries]) => [word, [...entries]])
+    );
+
+    for (const [word, entries] of Object.entries(definition)) {
+        const pastForm = PAST_TENSE_FORMS[word];
+        if (!pastForm) {
+            continue;
+        }
+
+        const pastEntries = entries
+            .filter(isVerbEntry)
+            .map(normalizePastTenseVerbEntry);
+
+        if (pastEntries.length === 0) {
+            continue;
+        }
+
+        augmented[pastForm] = dedupeEntries([
+            ...(augmented[pastForm] ?? []),
+            ...pastEntries,
+        ]);
+    }
+
+    for (const preposition of GENERIC_PREPOSITIONS) {
+        augmented[preposition] = dedupeEntries([
+            ...(augmented[preposition] ?? []),
+            ...buildPrepositionEntries(preposition),
+        ]);
+    }
+
+    return augmented;
+}
+
+export const lexiconData: LexiconDefinition = augmentLexicon(baseLexiconData);
